@@ -1,5 +1,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { ShoppingBag, X, Plus, Minus, ArrowUpRight, ShieldCheck, Package, LogIn, LogOut, RefreshCw } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from './supabase';
 
@@ -66,33 +67,88 @@ export default function App() {
 
   async function submitOrder(e) {
     e.preventDefault();
+
     if (!cart.length) return;
+
     if (!isSupabaseConfigured) {
       setNotice('المتجر لسه محتاج ربط Supabase عشان نحفظ الطلبات.');
       return;
     }
+
     setLoading(true);
     setNotice('');
+
     const payload = {
       customer_name: form.customer_name.trim(),
       phone: form.phone.trim(),
       address: form.address.trim(),
-      items: cart.map(({ product_id, name, price, size, color, quantity }) => ({ product_id, name, price, size, color, quantity })),
+      items: cart.map(({ product_id, name, price, size, color, quantity }) => ({
+        product_id,
+        name,
+        price,
+        size,
+        color,
+        quantity
+      })),
       total,
       status: 'new'
     };
-    const { error } = await supabase.from('orders').insert(payload);
-    setLoading(false);
-    if (error) {
-      setNotice('ماقدرناش نسجل الطلب. تأكد إن إعدادات قاعدة البيانات مكتملة.');
-      console.error(error);
-      return;
+
+    try {
+      // أولاً: تسجيل الطلب في قاعدة البيانات
+      const { error } = await supabase.from('orders').insert(payload);
+
+      if (error) {
+        console.error('Supabase order error:', error);
+        setNotice('ماقدرناش نسجل الطلب. تأكد إن إعدادات قاعدة البيانات مكتملة.');
+        return;
+      }
+
+      // تجهيز تفاصيل المنتجات للإيميل
+      const orderItems = payload.items.map(item =>
+        `${item.name} | المقاس: ${item.size} | اللون: ${item.color} | الكمية: ${item.quantity} | سعر القطعة: ${item.price} جنيه`
+      ).join('\n');
+
+      let emailSent = false;
+
+      // ثانياً: إرسال إشعار إلى بريد المتجر باستخدام EmailJS
+      try {
+        await emailjs.send(
+          'service_sr1rp78',
+          'template_j6d9i67',
+          {
+            customer_name: payload.customer_name,
+            phone: payload.phone,
+            address: payload.address,
+            order_id: `طلب جديد - ${new Date().toLocaleString('ar-EG')}`,
+            order_items: orderItems,
+            total: payload.total
+          },
+          'hiGURebO6S2IhbOwv'
+        );
+
+        emailSent = true;
+      } catch (emailError) {
+        console.error('EmailJS notification error:', emailError);
+      }
+
+      // الطلب محفوظ بالفعل، حتى لو فشل إرسال الإيميل
+      setCart([]);
+      setCheckout(false);
+      setDrawer(false);
+      setForm({ customer_name: '', phone: '', address: '' });
+
+      if (emailSent) {
+        setNotice('تم تسجيل الطلب بنجاح! واتبعث إشعار على Gmail بتاع المتجر.');
+      } else {
+        setNotice('الطلب اتسجل بنجاح، لكن إشعار Gmail ماتبعتش. راجع إعدادات EmailJS.');
+      }
+    } catch (error) {
+      console.error('Submit order error:', error);
+      setNotice('حصل خطأ أثناء تسجيل الطلب. راجع الاتصال والإعدادات.');
+    } finally {
+      setLoading(false);
     }
-    setCart([]);
-    setCheckout(false);
-    setDrawer(false);
-    setForm({ customer_name: '', phone: '', address: '' });
-    setNotice('تم تسجيل طلبك بنجاح! هنراجع بيانات الطلب ونتواصل معاك.');
   }
 
   async function adminLogin(e) {
