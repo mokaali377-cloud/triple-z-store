@@ -106,8 +106,6 @@ export default function App() {
 
   const [adminOrders, setAdminOrders] = useState([]);
 
-  // الدور يؤخذ من app_metadata، وليس user_metadata.
-  // هذا فحص للواجهة، أما الحماية الفعلية ففي سياسات RLS.
   const isAdmin =
     session?.user?.app_metadata?.role === 'admin';
 
@@ -127,9 +125,7 @@ export default function App() {
 
         if (error) throw error;
 
-        if (mounted) {
-          setSession(data.session);
-        }
+        if (mounted) setSession(data.session);
       } catch (error) {
         console.error('Initialization error:', error);
 
@@ -137,9 +133,7 @@ export default function App() {
           setNotice('تعذر تحميل بيانات المتجر. حاول تحديث الصفحة.');
         }
       } finally {
-        if (mounted) {
-          setAuthLoading(false);
-        }
+        if (mounted) setAuthLoading(false);
       }
     }
 
@@ -171,16 +165,13 @@ export default function App() {
       return;
     }
 
-    if (data) {
-      setProducts(data);
-    }
+    if (data) setProducts(data);
   }
 
   const total = useMemo(
     () =>
       cart.reduce(
-        (sum, item) =>
-          sum + Number(item.price) * item.quantity,
+        (sum, item) => sum + Number(item.price) * item.quantity,
         0
       ),
     [cart]
@@ -202,28 +193,10 @@ export default function App() {
       color: product.colors?.[0] || 'أسود'
     };
 
-    const key =
-      `${product.id}-${options.size}-${options.color}`;
+    const key = `${product.id}-${options.size}-${options.color}`;
 
     setCart(old => {
       const found = old.find(item => item.key === key);
-
-      if (found) {
-        const sameProductQuantity = old
-          .filter(item => item.product_id === product.id)
-          .reduce((sum, item) => sum + item.quantity, 0);
-
-        if (sameProductQuantity >= Number(product.stock)) {
-          setNotice('الكمية المطلوبة أكبر من المخزون المتاح.');
-          return old;
-        }
-
-        return old.map(item =>
-          item.key === key
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
 
       const sameProductQuantity = old
         .filter(item => item.product_id === product.id)
@@ -232,6 +205,14 @@ export default function App() {
       if (sameProductQuantity >= Number(product.stock)) {
         setNotice('الكمية المطلوبة أكبر من المخزون المتاح.');
         return old;
+      }
+
+      if (found) {
+        return old.map(item =>
+          item.key === key
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
       }
 
       return [
@@ -258,10 +239,7 @@ export default function App() {
       old
         .map(item =>
           item.key === key
-            ? {
-                ...item,
-                quantity: item.quantity + delta
-              }
+            ? { ...item, quantity: item.quantity + delta }
             : item
         )
         .filter(item => item.quantity > 0)
@@ -304,14 +282,7 @@ export default function App() {
       phone,
       address,
       items: cart.map(
-        ({
-          product_id,
-          name,
-          price,
-          size,
-          color,
-          quantity
-        }) => ({
+        ({ product_id, name, price, size, color, quantity }) => ({
           product_id,
           name,
           price,
@@ -324,18 +295,20 @@ export default function App() {
       status: 'new'
     };
 
+    // رقم مرجعي للإيميل فقط، لا نحتاج قراءة id من قاعدة البيانات.
+    const orderReference = `TZ-${Date.now()}`;
+
     try {
-      // تسجيل الطلب في Supabase.
-      const { data: savedOrder, error } = await supabase
+      // مهم: لا تضف .select() أو .single() هنا.
+      // الزائر يحتاج صلاحية INSERT فقط على جدول orders.
+      const { error } = await supabase
         .from('orders')
-        .insert(payload)
-        .select('id')
-        .single();
+        .insert(payload);
 
       if (error) {
         console.error('Supabase order error:', error);
         setNotice(
-          'ماقدرناش نسجل الطلب. حاول مرة تانية.'
+          'ماقدرناش نسجل الطلب. راجع اتصال قاعدة البيانات وحاول مرة تانية.'
         );
         return;
       }
@@ -349,7 +322,6 @@ export default function App() {
 
       let emailSent = false;
 
-      // إرسال إشعار الطلب باستخدام EmailJS.
       try {
         await emailjs.send(
           'service_sr1rp78',
@@ -358,9 +330,7 @@ export default function App() {
             customer_name: payload.customer_name,
             phone: payload.phone,
             address: payload.address,
-            order_id: savedOrder?.id
-              ? `#${savedOrder.id}`
-              : 'طلب جديد',
+            order_id: orderReference,
             order_items: orderItems,
             total: payload.total
           },
@@ -369,13 +339,10 @@ export default function App() {
 
         emailSent = true;
       } catch (emailError) {
-        console.error(
-          'EmailJS notification error:',
-          emailError
-        );
+        console.error('EmailJS notification error:', emailError);
       }
 
-      // الطلب محفوظ بالفعل حتى لو فشل إرسال الإيميل.
+      // نجاح حفظ الطلب لا يعتمد على نجاح إرسال الإيميل.
       setCart([]);
       setCheckout(false);
       setDrawer(false);
@@ -388,14 +355,12 @@ export default function App() {
 
       setNotice(
         emailSent
-          ? 'تم تسجيل الطلب بنجاح! واتبعث إشعار على Gmail بتاع المتجر.'
-          : 'الطلب اتسجل بنجاح، لكن إشعار Gmail ماتبعتش.'
+          ? `تم تسجيل طلبك بنجاح! رقم الطلب ${orderReference}، واتبعث إشعار Gmail.`
+          : `تم تسجيل الطلب بنجاح! رقم الطلب ${orderReference}، لكن إشعار Gmail ماتبعتش.`
       );
     } catch (error) {
       console.error('Submit order error:', error);
-      setNotice(
-        'حصل خطأ أثناء تسجيل الطلب. حاول مرة تانية.'
-      );
+      setNotice('حصل خطأ أثناء تسجيل الطلب. راجع Console.');
     } finally {
       setLoading(false);
     }
@@ -409,30 +374,23 @@ export default function App() {
     setNotice('');
 
     try {
-      const { data, error } =
-        await supabase.auth.signInWithPassword({
-          email: adminEmail.trim(),
-          password: adminPassword
-        });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: adminEmail.trim(),
+        password: adminPassword
+      });
 
       if (error) {
-        setNotice(
-          'بيانات الدخول غير صحيحة أو تعذر تسجيل الدخول.'
-        );
+        setNotice('بيانات الدخول غير صحيحة أو تعذر تسجيل الدخول.');
         return;
       }
 
       const loggedInSession = data.session;
-      const role =
-        loggedInSession?.user?.app_metadata?.role;
+      const role = loggedInSession?.user?.app_metadata?.role;
 
       if (role !== 'admin') {
-        // لا نسمح باستخدام لوحة الإدارة لحساب عادي.
         await supabase.auth.signOut();
         setSession(null);
-        setNotice(
-          'الحساب ده مش مخوّل لإدارة المتجر.'
-        );
+        setNotice('الحساب ده مش مخوّل لإدارة المتجر.');
         return;
       }
 
@@ -474,9 +432,7 @@ export default function App() {
 
     if (error) {
       console.error('Load orders error:', error);
-      setNotice(
-        'تعذر تحميل الطلبات. راجع صلاحيات حساب الإدارة.'
-      );
+      setNotice('تعذر تحميل الطلبات. راجع صلاحيات حساب الإدارة.');
       return;
     }
 
@@ -512,26 +468,16 @@ export default function App() {
       image_url: newProduct.image_url.trim() || null,
       description: newProduct.description.trim(),
       stock,
-      sizes: newProduct.sizes
-        .split(',')
-        .map(value => value.trim())
-        .filter(Boolean),
-      colors: newProduct.colors
-        .split(',')
-        .map(value => value.trim())
-        .filter(Boolean),
+      sizes: newProduct.sizes.split(',').map(v => v.trim()).filter(Boolean),
+      colors: newProduct.colors.split(',').map(v => v.trim()).filter(Boolean),
       is_active: true
     };
 
-    const { error } = await supabase
-      .from('products')
-      .insert(product);
+    const { error } = await supabase.from('products').insert(product);
 
     if (error) {
       console.error('Create product error:', error);
-      setNotice(
-        'تعذر إضافة المنتج. تأكد من صلاحيات المدير.'
-      );
+      setNotice('تعذر إضافة المنتج. تأكد من صلاحيات المدير.');
       return;
     }
 
@@ -578,14 +524,11 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <div className="topline">
-        DROP 01 — STREETWEAR FOR YOUR OWN LANE
-      </div>
+      <div className="topline">DROP 01 — STREETWEAR FOR YOUR OWN LANE</div>
 
       <header className="site-header">
         <a className="brand" href="#">
-          <span>TRIPLE</span>
-          <b>Z</b>
+          <span>TRIPLE</span><b>Z</b>
         </a>
 
         <nav>
@@ -594,19 +537,12 @@ export default function App() {
         </nav>
 
         <div className="header-actions">
-          <button
-            className="icon-button"
-            aria-label="السلة"
-            onClick={() => setDrawer(true)}
-          >
+          <button className="icon-button" aria-label="السلة" onClick={() => setDrawer(true)}>
             <ShoppingBag size={20} />
             <span className="cart-count">{count}</span>
           </button>
 
-          <button
-            className="admin-link"
-            onClick={() => setAdminOpen(value => !value)}
-          >
+          <button className="admin-link" onClick={() => setAdminOpen(value => !value)}>
             الإدارة
           </button>
         </div>
@@ -616,14 +552,8 @@ export default function App() {
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow">NEW SEASON / 2026</p>
-            <h1>
-              OWN YOUR
-              <br />
-              <em>LANE.</em>
-            </h1>
-            <p className="hero-text">
-              ستايل شبابي. تفاصيل مختلفة. اختار القطعة اللي شبهك.
-            </p>
+            <h1>OWN YOUR<br /><em>LANE.</em></h1>
+            <p className="hero-text">ستايل شبابي. تفاصيل مختلفة. اختار القطعة اللي شبهك.</p>
             <a className="primary-button" href="#shop">
               اكتشف المجموعة <ArrowUpRight size={18} />
             </a>
@@ -637,25 +567,15 @@ export default function App() {
             <div className="art-grid"></div>
             <div className="art-circle"></div>
             <div className="art-cross">✳</div>
-            <div className="art-type">
-              NO
-              <br />
-              RULES<span>.</span>
-            </div>
-            <div className="art-stamp">
-              TZ / 001
-              <br />
-              EST. 2026
-            </div>
+            <div className="art-type">NO<br />RULES<span>.</span></div>
+            <div className="art-stamp">TZ / 001<br />EST. 2026</div>
           </div>
         </section>
 
         {notice && (
           <div className="notice" role="status">
             {notice}
-            <button onClick={() => setNotice('')}>
-              <X size={16} />
-            </button>
+            <button onClick={() => setNotice('')}><X size={16} /></button>
           </div>
         )}
 
@@ -666,11 +586,7 @@ export default function App() {
                 <p className="eyebrow">PRIVATE AREA</p>
                 <h2>لوحة الإدارة</h2>
               </div>
-
-              <button
-                className="text-button"
-                onClick={() => setAdminOpen(false)}
-              >
+              <button className="text-button" onClick={() => setAdminOpen(false)}>
                 <X size={18} /> إغلاق
               </button>
             </div>
@@ -679,203 +595,46 @@ export default function App() {
               <p className="muted">جارٍ التحقق من تسجيل الدخول...</p>
             ) : !session ? (
               <form className="admin-login" onSubmit={adminLogin}>
-                <p>
-                  سجّل دخولك بحساب المدير. يجب أن يكون دور الحساب
-                  admin في App Metadata داخل Supabase.
-                </p>
-
-                <input
-                  type="email"
-                  placeholder="البريد الإلكتروني"
-                  value={adminEmail}
-                  onChange={e => setAdminEmail(e.target.value)}
-                  autoComplete="username"
-                  required
-                />
-
-                <input
-                  type="password"
-                  placeholder="كلمة المرور"
-                  value={adminPassword}
-                  onChange={e => setAdminPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                />
-
-                <button
-                  className="primary-button"
-                  type="submit"
-                >
-                  <LogIn size={17} /> تسجيل الدخول
-                </button>
+                <p>سجّل دخولك بحساب المدير. يجب أن يكون دور الحساب admin في App Metadata داخل Supabase.</p>
+                <input type="email" placeholder="البريد الإلكتروني" value={adminEmail} onChange={e => setAdminEmail(e.target.value)} autoComplete="username" required />
+                <input type="password" placeholder="كلمة المرور" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} autoComplete="current-password" required />
+                <button className="primary-button" type="submit"><LogIn size={17} /> تسجيل الدخول</button>
               </form>
             ) : !isAdmin ? (
               <div className="admin-login">
-                <p>
-                  الحساب الحالي غير مخوّل لإدارة المتجر.
-                </p>
-
-                <button
-                  className="secondary-button"
-                  onClick={adminLogout}
-                >
-                  <LogOut size={16} /> تسجيل الخروج
-                </button>
+                <p>الحساب الحالي غير مخوّل لإدارة المتجر.</p>
+                <button className="secondary-button" onClick={adminLogout}><LogOut size={16} /> تسجيل الخروج</button>
               </div>
             ) : (
               <div className="admin-content">
                 <div className="admin-toolbar">
-                  <span>
-                    <ShieldCheck size={18} /> تم التحقق من دور المدير
-                  </span>
-
-                  <button
-                    className="text-button"
-                    onClick={adminLogout}
-                  >
-                    <LogOut size={16} /> خروج
-                  </button>
+                  <span><ShieldCheck size={18} /> تم التحقق من دور المدير</span>
+                  <button className="text-button" onClick={adminLogout}><LogOut size={16} /> خروج</button>
                 </div>
 
                 <div className="admin-grid">
-                  <form
-                    className="admin-form"
-                    onSubmit={createProduct}
-                  >
-                    <h3>
-                      <Plus size={18} /> إضافة منتج
-                    </h3>
-
-                    <input
-                      placeholder="اسم المنتج"
-                      value={newProduct.name}
-                      onChange={e =>
-                        setNewProduct({
-                          ...newProduct,
-                          name: e.target.value
-                        })
-                      }
-                      required
-                    />
-
-                    <input
-                      type="number"
-                      min="0.01"
-                      step="0.01"
-                      placeholder="السعر بالجنيه"
-                      value={newProduct.price}
-                      onChange={e =>
-                        setNewProduct({
-                          ...newProduct,
-                          price: e.target.value
-                        })
-                      }
-                      required
-                    />
-
-                    <input
-                      type="url"
-                      placeholder="رابط الصورة"
-                      value={newProduct.image_url}
-                      onChange={e =>
-                        setNewProduct({
-                          ...newProduct,
-                          image_url: e.target.value
-                        })
-                      }
-                    />
-
-                    <input
-                      placeholder="الوصف"
-                      value={newProduct.description}
-                      onChange={e =>
-                        setNewProduct({
-                          ...newProduct,
-                          description: e.target.value
-                        })
-                      }
-                    />
-
-                    <input
-                      placeholder="المقاسات مفصولة بفواصل"
-                      value={newProduct.sizes}
-                      onChange={e =>
-                        setNewProduct({
-                          ...newProduct,
-                          sizes: e.target.value
-                        })
-                      }
-                    />
-
-                    <input
-                      placeholder="الألوان مفصولة بفواصل"
-                      value={newProduct.colors}
-                      onChange={e =>
-                        setNewProduct({
-                          ...newProduct,
-                          colors: e.target.value
-                        })
-                      }
-                    />
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      placeholder="المخزون"
-                      value={newProduct.stock}
-                      onChange={e =>
-                        setNewProduct({
-                          ...newProduct,
-                          stock: e.target.value
-                        })
-                      }
-                    />
-
-                    <button
-                      className="primary-button"
-                      type="submit"
-                    >
-                      حفظ المنتج
-                    </button>
+                  <form className="admin-form" onSubmit={createProduct}>
+                    <h3><Plus size={18} /> إضافة منتج</h3>
+                    <input placeholder="اسم المنتج" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} required />
+                    <input type="number" min="0.01" step="0.01" placeholder="السعر بالجنيه" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} required />
+                    <input type="url" placeholder="رابط الصورة" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} />
+                    <input placeholder="الوصف" value={newProduct.description} onChange={e => setNewProduct({ ...newProduct, description: e.target.value })} />
+                    <input placeholder="المقاسات مفصولة بفواصل" value={newProduct.sizes} onChange={e => setNewProduct({ ...newProduct, sizes: e.target.value })} />
+                    <input placeholder="الألوان مفصولة بفواصل" value={newProduct.colors} onChange={e => setNewProduct({ ...newProduct, colors: e.target.value })} />
+                    <input type="number" min="0" step="1" placeholder="المخزون" value={newProduct.stock} onChange={e => setNewProduct({ ...newProduct, stock: e.target.value })} />
+                    <button className="primary-button" type="submit">حفظ المنتج</button>
                   </form>
 
                   <div className="orders-box">
-                    <h3>
-                      <Package size={18} /> الطلبات
-                    </h3>
-
-                    <button
-                      className="secondary-button"
-                      onClick={loadOrders}
-                    >
-                      <RefreshCw size={16} /> تحديث الطلبات
-                    </button>
+                    <h3><Package size={18} /> الطلبات</h3>
+                    <button className="secondary-button" onClick={loadOrders}><RefreshCw size={16} /> تحديث الطلبات</button>
 
                     {adminOrders.map(order => (
-                      <article
-                        className="order-card"
-                        key={order.id}
-                      >
-                        <strong>
-                          طلب #{order.id} — {money(order.total)}
-                        </strong>
-
-                        <span>
-                          {order.customer_name} · {order.phone}
-                        </span>
-
+                      <article className="order-card" key={order.id}>
+                        <strong>طلب #{order.id} — {money(order.total)}</strong>
+                        <span>{order.customer_name} · {order.phone}</span>
                         <small>{order.address}</small>
-
-                        <select
-                          value={order.status}
-                          onChange={e =>
-                            updateOrderStatus(
-                              order.id,
-                              e.target.value
-                            )
-                          }
-                        >
+                        <select value={order.status} onChange={e => updateOrderStatus(order.id, e.target.value)}>
                           <option value="new">جديد</option>
                           <option value="confirmed">تم التأكيد</option>
                           <option value="shipped">تم الشحن</option>
@@ -885,11 +644,7 @@ export default function App() {
                       </article>
                     ))}
 
-                    {!adminOrders.length && (
-                      <p className="muted">
-                        اضغط تحديث الطلبات لعرض الأوردرات.
-                      </p>
-                    )}
+                    {!adminOrders.length && <p className="muted">اضغط تحديث الطلبات لعرض الأوردرات.</p>}
                   </div>
                 </div>
               </div>
@@ -901,23 +656,13 @@ export default function App() {
           <div className="section-heading">
             <div>
               <p className="eyebrow">THE FIRST DROP</p>
-              <h2>
-                القطَع الأساسية<span>.</span>
-              </h2>
+              <h2>القطَع الأساسية<span>.</span></h2>
             </div>
-
-            <p className="section-note">
-              قطع مختارة للبس اليومي
-              <br />
-              من TRIPLE Z
-            </p>
+            <p className="section-note">قطع مختارة للبس اليومي<br />من TRIPLE Z</p>
           </div>
 
           {!isSupabaseConfigured && (
-            <div className="setup-warning">
-              دي معاينة تجريبية بمنتجات مؤقتة. هنربط قاعدة
-              البيانات قبل استقبال أي طلبات فعلية.
-            </div>
+            <div className="setup-warning">دي معاينة تجريبية بمنتجات مؤقتة. هنربط قاعدة البيانات قبل استقبال أي طلبات فعلية.</div>
           )}
 
           <div className="product-grid">
@@ -928,24 +673,14 @@ export default function App() {
               };
 
               return (
-                <article
-                  className="product-card"
-                  key={product.id}
-                >
+                <article className="product-card" key={product.id}>
                   <div className="product-image">
                     {product.image_url ? (
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        loading="lazy"
-                      />
+                      <img src={product.image_url} alt={product.name} loading="lazy" />
                     ) : (
                       <Placeholder name={product.name} />
                     )}
-
-                    <span className="product-index">
-                      TZ — {String(index + 1).padStart(2, '0')}
-                    </span>
+                    <span className="product-index">TZ — {String(index + 1).padStart(2, '0')}</span>
                   </div>
 
                   <div className="product-info">
@@ -953,67 +688,26 @@ export default function App() {
                       <h3>{product.name}</h3>
                       <p>{product.description}</p>
                     </div>
-
                     <strong>{money(product.price)}</strong>
                   </div>
 
                   <div className="product-options">
                     <label>
                       المقاس
-                      <select
-                        value={opts.size}
-                        onChange={e =>
-                          setSelected({
-                            ...selected,
-                            [product.id]: {
-                              ...opts,
-                              size: e.target.value
-                            }
-                          })
-                        }
-                      >
-                        {(product.sizes?.length
-                          ? product.sizes
-                          : ['M']
-                        ).map(size => (
-                          <option key={size}>{size}</option>
-                        ))}
+                      <select value={opts.size} onChange={e => setSelected({ ...selected, [product.id]: { ...opts, size: e.target.value } })}>
+                        {(product.sizes?.length ? product.sizes : ['M']).map(size => <option key={size}>{size}</option>)}
                       </select>
                     </label>
-
                     <label>
                       اللون
-                      <select
-                        value={opts.color}
-                        onChange={e =>
-                          setSelected({
-                            ...selected,
-                            [product.id]: {
-                              ...opts,
-                              color: e.target.value
-                            }
-                          })
-                        }
-                      >
-                        {(product.colors?.length
-                          ? product.colors
-                          : ['أسود']
-                        ).map(color => (
-                          <option key={color}>{color}</option>
-                        ))}
+                      <select value={opts.color} onChange={e => setSelected({ ...selected, [product.id]: { ...opts, color: e.target.value } })}>
+                        {(product.colors?.length ? product.colors : ['أسود']).map(color => <option key={color}>{color}</option>)}
                       </select>
                     </label>
                   </div>
 
-                  <button
-                    className="add-button"
-                    disabled={Number(product.stock) <= 0}
-                    onClick={() => addToCart(product)}
-                  >
-                    {Number(product.stock) <= 0
-                      ? 'غير متوفر'
-                      : 'أضف للسلة'}
-                    <Plus size={17} />
+                  <button className="add-button" disabled={Number(product.stock) <= 0} onClick={() => addToCart(product)}>
+                    {Number(product.stock) <= 0 ? 'غير متوفر' : 'أضف للسلة'} <Plus size={17} />
                   </button>
                 </article>
               );
@@ -1023,160 +717,65 @@ export default function App() {
 
         <section className="manifesto" id="about">
           <p className="eyebrow">MORE THAN A FIT</p>
-          <h2>
-            NOT HERE TO
-            <br />
-            <span>BLEND IN.</span>
-          </h2>
-          <p>
-            TRIPLE Z — هوية مستقلة، ستايل جريء، وتفاصيل معمولة
-            عشان تفرق.
-          </p>
+          <h2>NOT HERE TO<br /><span>BLEND IN.</span></h2>
+          <p>TRIPLE Z — هوية مستقلة، ستايل جريء، وتفاصيل معمولة عشان تفرق.</p>
         </section>
 
         <section className="benefits">
-          <div>
-            <ShieldCheck />
-            <strong>اختيارات واضحة</strong>
-            <span>مقاسات وألوان لكل قطعة</span>
-          </div>
-
-          <div>
-            <Package />
-            <strong>طلب منظم</strong>
-            <span>بيانات الطلب بتتسجل بأمان</span>
-          </div>
-
-          <div>
-            <ShoppingBag />
-            <strong>ستايل TRIPLE Z</strong>
-            <span>Streetwear بطابع خاص</span>
-          </div>
+          <div><ShieldCheck /><strong>اختيارات واضحة</strong><span>مقاسات وألوان لكل قطعة</span></div>
+          <div><Package /><strong>طلب منظم</strong><span>بيانات الطلب بتتسجل بأمان</span></div>
+          <div><ShoppingBag /><strong>ستايل TRIPLE Z</strong><span>Streetwear بطابع خاص</span></div>
         </section>
       </main>
 
       <footer>
-        <a className="brand" href="#">
-          <span>TRIPLE</span>
-          <b>Z</b>
-        </a>
-
+        <a className="brand" href="#"><span>TRIPLE</span><b>Z</b></a>
         <span>© 2026 TRIPLE Z. ALL RIGHTS RESERVED.</span>
-
-        <button
-          className="text-button"
-          onClick={() => setAdminOpen(true)}
-        >
-          ADMIN LOGIN
-        </button>
+        <button className="text-button" onClick={() => setAdminOpen(true)}>ADMIN LOGIN</button>
       </footer>
 
       {drawer && (
-        <div
-          className="drawer-backdrop"
-          onClick={() => setDrawer(false)}
-        >
-          <aside
-            className="cart-drawer"
-            onClick={e => e.stopPropagation()}
-          >
+        <div className="drawer-backdrop" onClick={() => setDrawer(false)}>
+          <aside className="cart-drawer" onClick={e => e.stopPropagation()}>
             <div className="drawer-heading">
               <div>
                 <p className="eyebrow">YOUR SELECTION</p>
                 <h2>سلة المشتريات</h2>
               </div>
-
-              <button
-                className="icon-button"
-                onClick={() => setDrawer(false)}
-              >
-                <X />
-              </button>
+              <button className="icon-button" onClick={() => setDrawer(false)}><X /></button>
             </div>
 
             {!cart.length ? (
               <div className="empty-cart">
                 <ShoppingBag size={35} />
                 <p>السلة لسه فاضية.</p>
-
-                <button
-                  className="secondary-button"
-                  onClick={() => setDrawer(false)}
-                >
-                  كمّل تسوّق
-                </button>
+                <button className="secondary-button" onClick={() => setDrawer(false)}>كمّل تسوّق</button>
               </div>
             ) : (
               <>
                 <div className="cart-items">
                   {cart.map(item => (
-                    <article
-                      className="cart-item"
-                      key={item.key}
-                    >
+                    <article className="cart-item" key={item.key}>
                       <div className="cart-thumb">
-                        {item.image_url ? (
-                          <img src={item.image_url} alt="" />
-                        ) : (
-                          <b>TZ</b>
-                        )}
+                        {item.image_url ? <img src={item.image_url} alt="" /> : <b>TZ</b>}
                       </div>
-
                       <div className="cart-item-details">
                         <strong>{item.name}</strong>
-                        <span>
-                          {item.size} / {item.color}
-                        </span>
-                        <b>
-                          {money(item.price * item.quantity)}
-                        </b>
-
+                        <span>{item.size} / {item.color}</span>
+                        <b>{money(item.price * item.quantity)}</b>
                         <div className="qty-controls">
-                          <button
-                            onClick={() =>
-                              changeQty(item.key, -1)
-                            }
-                          >
-                            <Minus size={14} />
-                          </button>
-
+                          <button onClick={() => changeQty(item.key, -1)}><Minus size={14} /></button>
                           <span>{item.quantity}</span>
-
-                          <button
-                            onClick={() => {
-                              const product = products.find(
-                                p => p.id === item.product_id
-                              );
-
-                              if (!product) return;
-
-                              const productQuantity = cart
-                                .filter(
-                                  i =>
-                                    i.product_id ===
-                                    item.product_id
-                                )
-                                .reduce(
-                                  (sum, i) =>
-                                    sum + i.quantity,
-                                  0
-                                );
-
-                              if (
-                                productQuantity >=
-                                Number(product.stock)
-                              ) {
-                                setNotice(
-                                  'الكمية المطلوبة أكبر من المخزون المتاح.'
-                                );
-                                return;
-                              }
-
-                              changeQty(item.key, 1);
-                            }}
-                          >
-                            <Plus size={14} />
-                          </button>
+                          <button onClick={() => {
+                            const product = products.find(p => p.id === item.product_id);
+                            if (!product) return;
+                            const quantity = cart.filter(i => i.product_id === item.product_id).reduce((sum, i) => sum + i.quantity, 0);
+                            if (quantity >= Number(product.stock)) {
+                              setNotice('الكمية المطلوبة أكبر من المخزون المتاح.');
+                              return;
+                            }
+                            changeQty(item.key, 1);
+                          }}><Plus size={14} /></button>
                         </div>
                       </div>
                     </article>
@@ -1189,70 +788,18 @@ export default function App() {
                 </div>
 
                 {!checkout ? (
-                  <button
-                    className="primary-button full-button"
-                    onClick={() => setCheckout(true)}
-                  >
+                  <button className="primary-button full-button" onClick={() => setCheckout(true)}>
                     إتمام الطلب <ArrowUpRight size={18} />
                   </button>
                 ) : (
-                  <form
-                    className="checkout-form"
-                    onSubmit={submitOrder}
-                  >
+                  <form className="checkout-form" onSubmit={submitOrder}>
                     <h3>بيانات التوصيل</h3>
-
-                    <input
-                      placeholder="الاسم بالكامل"
-                      value={form.customer_name}
-                      onChange={e =>
-                        setForm({
-                          ...form,
-                          customer_name: e.target.value
-                        })
-                      }
-                      required
-                      minLength="2"
-                    />
-
-                    <input
-                      placeholder="رقم الموبايل"
-                      type="tel"
-                      value={form.phone}
-                      onChange={e =>
-                        setForm({
-                          ...form,
-                          phone: e.target.value
-                        })
-                      }
-                      required
-                      minLength="8"
-                    />
-
-                    <textarea
-                      placeholder="العنوان بالتفصيل والمحافظة"
-                      value={form.address}
-                      onChange={e =>
-                        setForm({
-                          ...form,
-                          address: e.target.value
-                        })
-                      }
-                      required
-                      minLength="8"
-                    />
-
-                    <p className="muted">
-                      الدفع عند الاستلام — هنأكد الطلب قبل الشحن.
-                    </p>
-
-                    <button
-                      className="primary-button full-button"
-                      disabled={loading}
-                    >
-                      {loading
-                        ? 'جارٍ تسجيل الطلب...'
-                        : `تأكيد الطلب — ${money(total)}`}
+                    <input placeholder="الاسم بالكامل" value={form.customer_name} onChange={e => setForm({ ...form, customer_name: e.target.value })} required minLength="2" />
+                    <input placeholder="رقم الموبايل" type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required minLength="8" />
+                    <textarea placeholder="العنوان بالتفصيل والمحافظة" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} required minLength="8" />
+                    <p className="muted">الدفع عند الاستلام — هنأكد الطلب قبل الشحن.</p>
+                    <button className="primary-button full-button" type="submit" disabled={loading}>
+                      {loading ? 'جارٍ تسجيل الطلب...' : `تأكيد الطلب — ${money(total)}`}
                     </button>
                   </form>
                 )}
