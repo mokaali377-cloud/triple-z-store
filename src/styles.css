@@ -175,17 +175,33 @@ select {
 }
 
 .admin-link {
-  padding: 9px 13px;
-  border: 1px solid #333;
-  border-radius: 30px;
-  background: transparent;
-  color: #bbb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 17px;
+  border: 1px solid #555;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #202020, #0d0d0d);
+  color: #f5f5f5;
   font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .2);
+  transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease;
 }
 
 .admin-link:hover {
+  transform: translateY(-1px);
   border-color: #fff;
-  color: #fff;
+  background: #fff;
+  color: #000;
+}
+
+.admin-link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
 /* Navigation */
@@ -661,27 +677,43 @@ select {
 .search-box {
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  max-width: 550px;
-  min-height: 48px;
-  margin: 22px 0 30px;
-  padding: 0 15px;
-  border: 1px solid #333;
-  border-radius: 5px;
-  background: #111;
-  color: #aaa;
+  gap: 12px;
+  width: min(92%, 620px);
+  min-height: 54px;
+  margin: 22px auto 30px;
+  padding: 0 20px;
+  border: 1px solid #353535;
+  border-radius: 999px;
+  background: #151515;
+  color: #bdbdbd;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.search-bar:hover,
+.search-box:hover {
+  border-color: #666;
+  background: #191919;
+}
+
+.search-bar:focus-within,
+.search-box:focus-within {
+  border-color: #aaa;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .06);
 }
 
 .search-bar input,
 .search-box input {
+  flex: 1;
   width: 100%;
   min-width: 0;
+  min-height: 48px;
   padding: 12px 0;
   border: 0;
   outline: 0;
   background: transparent;
   color: #fff;
+  font-size: 14px;
 }
 
 .search-bar input::placeholder,
@@ -1393,6 +1425,168 @@ footer strong {
   .order-card,
   .complaint-card {
     padding: 13px;
+  }
+}
+
+
+
+/* TRIPLE Z: language and customer account controls */
+.header-actions select {
+  min-height: 42px;
+  max-width: 150px;
+  padding: 9px 12px;
+  border: 1px solid #383838;
+  border-radius: 999px;
+  background: #111;
+  color: #f5f5f5;
+  cursor: pointer;
+}
+
+.header-actions select:focus {
+  border-color: #aaa;
+}
+
+/* Customer authentication modal */
+.customer-auth-backdrop,
+.customer-auth-overlay,
+.auth-backdrop {
+  position: fixed;
+  z-index: 200;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, .82);
+  backdrop-filter: blur(6px);
+}
+
+.customer-auth-modal,
+.customer-auth-card,
+.auth-modal {
+  width: min(100%, 440px);
+  max-height: calc(100dvh - 36px);
+  padding: clamp(22px, 5vw, 32px);
+  overflow-y: auto;
+  border: 1px solid #353535;
+  border-radius: 18px;
+  background: #101010;
+  color: #f5f5f5;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, .6);
+}
+
+.customer-auth-modal h2,
+.customer-auth-card h2,
+.auth-modal h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.customer-auth-modal p,
+.customer-auth-card p,
+.auth-modal p {
+  color: #aaa;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.customer-auth-modal label,
+.customer-auth-card label,
+.auth-modal label {
+  display: grid;
+  gap: 7px;
+  color: #ccc;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.customer-auth-modal input,
+.customer-auth-card input,
+.auth-modal input {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #383838;
+  border-radius: 9px;
+  background: #080808;
+  color: #fff;
+}
+
+.customer-auth-modal input:focus,
+.customer-auth-card input:focus,
+.auth-modal input:focus {
+  border-color: #aaa;
+  outline: none;
+}
+
+.customer-auth-modal button,
+.customer-auth-card button,
+.auth-modal button {
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.customer-auth-modal button:hover,
+.customer-auth-card button:hover,
+.auth-modal button:hover {
+  transform: translateY(-1px);
+}
+
+/* Optional footer admin access */
+.admin-footer,
+.footer-admin,
+.admin-access-footer {
+  display: flex;
+  justify-content: center;
+  padding: 18px 16px 26px;
+  border-top: 1px solid #242424;
+}
+
+/* Search and controls for RTL languages */
+html[dir="rtl"] .search-bar,
+html[dir="rtl"] .search-box {
+  direction: rtl;
+}
+
+html[dir="rtl"] .header-actions {
+  direction: rtl;
+}
+
+/* Small-screen refinements for new controls */
+@media (max-width: 600px) {
+  .search-bar,
+  .search-box {
+    width: 92%;
+    min-height: 48px;
+    margin: 18px auto 24px;
+    padding: 0 16px;
+  }
+
+  .search-bar input,
+  .search-box input {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .header-actions .admin-link {
+    min-height: 38px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .header-actions select {
+    max-width: 120px;
+    min-height: 38px;
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+
+  .customer-auth-modal,
+  .customer-auth-card,
+  .auth-modal {
+    padding: 22px 18px;
+    border-radius: 14px;
   }
 }
 
