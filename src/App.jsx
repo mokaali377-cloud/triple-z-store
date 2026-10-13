@@ -4,7 +4,7 @@ import emailjs from '@emailjs/browser';
 import {
   ShoppingBag, X, Plus, Minus, ArrowUpRight, ShieldCheck,
   Package, LogIn, LogOut, RefreshCw, MessageSquareWarning,
-  Search, Send, ImagePlus, Trash2
+  Search, Send, ImagePlus, Trash2, UserRound, Languages
 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from './supabase';
 
@@ -30,6 +30,48 @@ const demoProducts = [
 ];
 
 const money = n => `${Number(n || 0).toLocaleString('en-US')} ج.م`;
+
+const translations = {
+  'الرئيسية': { en: 'Home', fr: 'Accueil' },
+  'المنتجات': { en: 'Products', fr: 'Produits' },
+  'الشكاوى والتواصل': { en: 'Contact & Support', fr: 'Contact et assistance' },
+  'تسوّق الآن': { en: 'Shop now', fr: 'Acheter' },
+  'اكتشف المجموعة': { en: 'Explore collection', fr: 'Découvrir la collection' },
+  'ابحث عن المنتجات...': { en: 'Search products...', fr: 'Rechercher des produits...' },
+  'بحث': { en: 'Search', fr: 'Rechercher' },
+  'أضف للسلة': { en: 'Add to cart', fr: 'Ajouter au panier' },
+  'غير متوفر': { en: 'Out of stock', fr: 'Épuisé' },
+  'سلة المشتريات': { en: 'Shopping cart', fr: 'Panier' },
+  'السلة لسه فاضية.': { en: 'Your cart is empty.', fr: 'Votre panier est vide.' },
+  'كمّل تسوّق': { en: 'Continue shopping', fr: 'Continuer les achats' },
+  'إتمام الطلب': { en: 'Checkout', fr: 'Commander' },
+  'بيانات التوصيل': { en: 'Delivery details', fr: 'Informations de livraison' },
+  'الاسم بالكامل': { en: 'Full name', fr: 'Nom complet' },
+  'رقم الموبايل': { en: 'Phone number', fr: 'Téléphone' },
+  'العنوان بالتفصيل والمحافظة': { en: 'Full address and governorate', fr: 'Adresse complète et gouvernorat' },
+  'الدفع عند الاستلام — هنأكد الطلب قبل الشحن.': { en: 'Cash on delivery — we will confirm before shipping.', fr: 'Paiement à la livraison — nous confirmerons avant expédition.' },
+  'ابعتلنا رسالة': { en: 'Send us a message', fr: 'Envoyez-nous un message' },
+  'نوع الرسالة': { en: 'Message type', fr: 'Type de message' },
+  'تفاصيل الرسالة': { en: 'Message details', fr: 'Détails du message' },
+  'إرسال الرسالة': { en: 'Send message', fr: 'Envoyer le message' },
+  'دخول الإدارة': { en: 'Admin Login', fr: 'Connexion admin' },
+  'تسجيل الدخول': { en: 'Sign in', fr: 'Se connecter' },
+  'إنشاء حساب': { en: 'Create account', fr: 'Créer un compte' },
+  'البريد الإلكتروني': { en: 'Email address', fr: 'Adresse e-mail' },
+  'كلمة المرور': { en: 'Password', fr: 'Mot de passe' },
+  'اسمك': { en: 'Your name', fr: 'Votre nom' },
+  'طلب منظم': { en: 'Organized ordering', fr: 'Commande organisée' },
+  'بيانات الطلب بتتسجل بأمان': { en: 'Your order details are handled securely.', fr: 'Vos informations de commande sont traitées en sécurité.' },
+  'اختيارات واضحة': { en: 'Clear choices', fr: 'Choix clairs' },
+  'مقاسات وألوان لكل قطعة': { en: 'Sizes and colors for every item', fr: 'Tailles et couleurs pour chaque article' },
+  'ستايل TRIPLE Z': { en: 'TRIPLE Z style', fr: 'Style TRIPLE Z' },
+  'Streetwear بطابع خاص': { en: 'Streetwear with its own identity', fr: 'Streetwear avec une identité unique' },
+};
+
+function translate(text, language) {
+  if (language === 'ar') return text;
+  return translations[text]?.[language] || text;
+}
 const allowedOrderStatuses = ['new', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 const complaintStatuses = ['new', 'in_review', 'resolved'];
 
@@ -68,7 +110,25 @@ export default function App() {
   const [page, setPage] = useState(getCurrentPage);
   const [products, setProducts] = useState(demoProducts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem('triple-z-cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [language, setLanguage] = useState(() => {
+    try { return window.localStorage.getItem('triple-z-language') || 'ar'; }
+    catch { return 'ar'; }
+  });
+  const [customerAuthOpen, setCustomerAuthOpen] = useState(false);
+  const [customerAuthMode, setCustomerAuthMode] = useState('login');
+  const [customerName, setCustomerName] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerPassword, setCustomerPassword] = useState('');
+  const [customerAuthLoading, setCustomerAuthLoading] = useState(false);
+  const t = value => translate(value, language);
   const [drawer, setDrawer] = useState(false);
   const [selected, setSelected] = useState({});
   const [checkout, setCheckout] = useState(false);
@@ -114,6 +174,18 @@ export default function App() {
   const [adminTab, setAdminTab] = useState('orders');
 
   const isAdmin = session?.user?.app_metadata?.role === 'admin';
+
+  useEffect(() => {
+    try { window.localStorage.setItem('triple-z-cart', JSON.stringify(cart)); }
+    catch (error) { console.warn('Could not persist cart:', error); }
+  }, [cart]);
+
+  useEffect(() => {
+    try { window.localStorage.setItem('triple-z-language', language); }
+    catch (error) { console.warn('Could not persist language:', error); }
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+  }, [language]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -268,12 +340,81 @@ export default function App() {
     );
   }
 
+  async function submitCustomerAuth(e) {
+    e.preventDefault();
+    if (!supabase || !isSupabaseConfigured || customerAuthLoading) {
+      setNotice('المتجر غير متصل بنظام الحسابات.');
+      return;
+    }
+    if (customerPassword.length < 6) {
+      setNotice('كلمة المرور لازم تكون 6 أحرف على الأقل.');
+      return;
+    }
+
+    setCustomerAuthLoading(true);
+    setNotice('');
+    try {
+      if (customerAuthMode === 'signup') {
+        const { data, error } = await supabase.auth.signUp({
+          email: customerEmail.trim(),
+          password: customerPassword,
+          options: {
+            data: { full_name: customerName.trim() }
+          }
+        });
+        if (error) throw error;
+        if (data.session) {
+          setSession(data.session);
+          setCustomerAuthOpen(false);
+          setCustomerPassword('');
+          setNotice('تم إنشاء الحساب وتسجيل الدخول بنجاح.');
+        } else {
+          setNotice('تم إنشاء الحساب. راجع بريدك الإلكتروني لتأكيده، ثم سجّل الدخول.');
+          setCustomerAuthMode('login');
+        }
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: customerEmail.trim(),
+          password: customerPassword
+        });
+        if (error) throw error;
+        setSession(data.session);
+        setCustomerAuthOpen(false);
+        setCustomerPassword('');
+        setNotice('تم تسجيل الدخول بنجاح.');
+      }
+    } catch (error) {
+      console.error('Customer authentication error:', error);
+      setNotice(error.message || 'تعذر تسجيل الدخول. راجع بياناتك وحاول مرة أخرى.');
+    } finally {
+      setCustomerAuthLoading(false);
+    }
+  }
+
+  async function customerLogout() {
+    if (!supabase) return;
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setNotice('تعذر تسجيل الخروج. حاول مرة أخرى.');
+      return;
+    }
+    setSession(null);
+    setNotice('تم تسجيل الخروج.');
+  }
+
   async function submitOrder(e) {
     e.preventDefault();
     if (loading) return;
 
     if (!cart.length) {
       setNotice('السلة فاضية. أضف منتجًا أولًا.');
+      return;
+    }
+
+    if (!session || isAdmin) {
+      setNotice('لازم تسجل دخول بحساب العميل قبل تأكيد الطلب.');
+      setCustomerAuthMode('login');
+      setCustomerAuthOpen(true);
       return;
     }
 
@@ -1008,12 +1149,29 @@ export default function App() {
         </nav>
 
         <div className="header-actions">
+          <label className="language-switch" aria-label="Language">
+            <Languages size={16} />
+            <select value={language} onChange={e => setLanguage(e.target.value)} aria-label="Choose language">
+              <option value="ar">العربية</option>
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
+          </label>
+          {session && !isAdmin ? (
+            <button className="customer-account-button" onClick={customerLogout} title={session.user?.email || ''}>
+              <LogOut size={16} /> {language === 'ar' ? 'تسجيل الخروج' : language === 'fr' ? 'Déconnexion' : 'Sign out'}
+            </button>
+          ) : (
+            <button className="customer-account-button" onClick={() => { setCustomerAuthMode('login'); setCustomerAuthOpen(true); }}>
+              <UserRound size={16} /> {language === 'ar' ? 'حسابي' : language === 'fr' ? 'Mon compte' : 'My account'}
+            </button>
+          )}
           <button className="icon-button" aria-label="السلة" onClick={() => setDrawer(true)}>
             <ShoppingBag size={20} />
             {count > 0 && <span className="cart-count">{count}</span>}
           </button>
           <button className="admin-link" onClick={() => setAdminOpen(value => !value)}>
-            <LogIn size={15} /> Admin Login
+            <LogIn size={15} /> {t('دخول الإدارة')}
           </button>
         </div>
       </header>
@@ -1072,9 +1230,9 @@ export default function App() {
             </section>
 
             <section className="benefits">
-              <div><ShieldCheck /><strong>اختيارات واضحة</strong><span>مقاسات وألوان لكل قطعة</span></div>
-              <div><Package /><strong>طلب منظم</strong><span>بيانات الطلب بتتسجل بأمان</span></div>
-              <div><ShoppingBag /><strong>ستايل TRIPLE Z</strong><span>Streetwear بطابع خاص</span></div>
+              <div><ShieldCheck /><strong>{t("اختيارات واضحة")}</strong><span>{t("مقاسات وألوان لكل قطعة")}</span></div>
+              <div><Package /><strong>{t("طلب منظم")}</strong><span>{t("بيانات الطلب بتتسجل بأمان")}</span></div>
+              <div><ShoppingBag /><strong>{t("ستايل TRIPLE Z")}</strong><span>{t("Streetwear بطابع خاص")}</span></div>
             </section>
           </>
         )}
@@ -1090,7 +1248,7 @@ export default function App() {
             <form className="product-search" onSubmit={e => e.preventDefault()}>
               <input
                 type="search"
-                placeholder="ابحث عن المنتجات..."
+                placeholder={t("ابحث عن المنتجات...")}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 aria-label="البحث عن المنتجات"
@@ -1103,7 +1261,7 @@ export default function App() {
               )}
               <button className="search-submit" type="submit" aria-label="بحث">
                 <Search size={20} />
-                <span>بحث</span>
+                <span>{t("بحث")}</span>
               </button>
             </form>
 
@@ -1231,6 +1389,59 @@ export default function App() {
         </button>
       </footer>
 
+      {customerAuthOpen && (
+        <div className="drawer-backdrop auth-backdrop" onClick={() => setCustomerAuthOpen(false)}>
+          <section className="customer-auth-modal" onClick={e => e.stopPropagation()}>
+            <div className="drawer-heading">
+              <div>
+                <p className="eyebrow">TRIPLE Z ACCOUNT</p>
+                <h2>{customerAuthMode === 'signup'
+                  ? (language === 'ar' ? 'إنشاء حساب جديد' : language === 'fr' ? 'Créer un compte' : 'Create your account')
+                  : (language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Connexion' : 'Sign in')}</h2>
+              </div>
+              <button className="icon-button" onClick={() => setCustomerAuthOpen(false)} aria-label="Close">
+                <X />
+              </button>
+            </div>
+            <p className="muted">
+              {language === 'ar'
+                ? 'سجّل دخولك أو أنشئ حسابًا قبل تأكيد طلبك.'
+                : language === 'fr'
+                  ? 'Connectez-vous ou créez un compte avant de confirmer votre commande.'
+                  : 'Sign in or create an account before confirming your order.'}
+            </p>
+            <form className="customer-auth-form" onSubmit={submitCustomerAuth}>
+              {customerAuthMode === 'signup' && (
+                <label>
+                  {language === 'ar' ? 'الاسم بالكامل' : language === 'fr' ? 'Nom complet' : 'Full name'}
+                  <input value={customerName} onChange={e => setCustomerName(e.target.value)} minLength={2} required autoComplete="name" />
+                </label>
+              )}
+              <label>
+                {language === 'ar' ? 'البريد الإلكتروني' : language === 'fr' ? 'Adresse e-mail' : 'Email address'}
+                <input type="email" value={customerEmail} onChange={e => setCustomerEmail(e.target.value)} required autoComplete="email" />
+              </label>
+              <label>
+                {language === 'ar' ? 'كلمة المرور (6 أحرف على الأقل)' : language === 'fr' ? 'Mot de passe (6 caractères minimum)' : 'Password (at least 6 characters)'}
+                <input type="password" value={customerPassword} onChange={e => setCustomerPassword(e.target.value)} minLength={6} required autoComplete={customerAuthMode === 'signup' ? 'new-password' : 'current-password'} />
+              </label>
+              <button className="primary-button full-button" type="submit" disabled={customerAuthLoading}>
+                {customerAuthLoading
+                  ? (language === 'ar' ? 'جارٍ المعالجة...' : language === 'fr' ? 'Traitement...' : 'Please wait...')
+                  : customerAuthMode === 'signup'
+                    ? (language === 'ar' ? 'إنشاء حساب' : language === 'fr' ? 'Créer un compte' : 'Create account')
+                    : (language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Se connecter' : 'Sign in')}
+              </button>
+            </form>
+            <button className="auth-mode-toggle" type="button" onClick={() => setCustomerAuthMode(mode => mode === 'login' ? 'signup' : 'login')}>
+              {customerAuthMode === 'login'
+                ? (language === 'ar' ? 'ليس لديك حساب؟ إنشاء حساب' : language === 'fr' ? 'Pas de compte ? Créer un compte' : "Don't have an account? Create one")
+                : (language === 'ar' ? 'لديك حساب بالفعل؟ تسجيل الدخول' : language === 'fr' ? 'Déjà un compte ? Se connecter' : 'Already have an account? Sign in')}
+            </button>
+          </section>
+        </div>
+      )}
+
       {customOpen && (
         <div className="drawer-backdrop custom-backdrop" onClick={() => setCustomOpen(false)}>
           <section className="custom-modal" onClick={e => e.stopPropagation()}>
@@ -1307,7 +1518,7 @@ export default function App() {
             <div className="drawer-heading">
               <div>
                 <p className="eyebrow">YOUR SELECTION</p>
-                <h2>سلة المشتريات</h2>
+                <h2>{t('سلة المشتريات')}</h2>
               </div>
               <button className="icon-button" onClick={() => setDrawer(false)}
                 aria-label="إغلاق السلة">
@@ -1318,7 +1529,7 @@ export default function App() {
             {!cart.length ? (
               <div className="empty-cart">
                 <ShoppingBag size={35} />
-                <p>السلة لسه فاضية.</p>
+                <p>{t('السلة لسه فاضية.')}</p>
                 <button className="secondary-button" onClick={() => {
                   setDrawer(false);
                   navigate('products');
@@ -1371,22 +1582,28 @@ export default function App() {
                 </div>
 
                 {!checkout ? (
-                  <button className="primary-button full-button" onClick={() => setCheckout(true)}>
-                    إتمام الطلب <ArrowUpRight size={18} />
+                  <button className="primary-button full-button" onClick={() => {
+                    setCheckout(true);
+                    if (!session || isAdmin) {
+                      setCustomerAuthMode('login');
+                      setCustomerAuthOpen(true);
+                    }
+                  }}>
+                    {t('إتمام الطلب')} <ArrowUpRight size={18} />
                   </button>
                 ) : (
                   <form className="checkout-form" onSubmit={submitOrder}>
-                    <h3>بيانات التوصيل</h3>
-                    <input placeholder="الاسم بالكامل" value={form.customer_name}
+                    <h3>{t('بيانات التوصيل')}</h3>
+                    <input placeholder={t("الاسم بالكامل")} value={form.customer_name}
                       onChange={e => setForm({ ...form, customer_name: e.target.value })}
                       required minLength={2} />
-                    <input placeholder="رقم الموبايل" type="tel" value={form.phone}
+                    <input placeholder={t("رقم الموبايل")} type="tel" value={form.phone}
                       onChange={e => setForm({ ...form, phone: e.target.value })}
                       required minLength={8} />
-                    <textarea placeholder="العنوان بالتفصيل والمحافظة" value={form.address}
+                    <textarea placeholder={language === "ar" ? "العنوان بالتفصيل والمحافظة" : language === "fr" ? "Adresse complète et gouvernorat" : "Full address and governorate"} value={form.address}
                       onChange={e => setForm({ ...form, address: e.target.value })}
                       required minLength={8} />
-                    <p className="muted">الدفع عند الاستلام — هنأكد الطلب قبل الشحن.</p>
+                    <p className="muted">{t("الدفع عند الاستلام — هنأكد الطلب قبل الشحن.")}</p>
                     <button className="primary-button full-button" type="submit" disabled={loading}>
                       {loading ? 'جارٍ تسجيل الطلب...' : `تأكيد الطلب — ${money(total)}`}
                     </button>
