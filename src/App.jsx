@@ -1021,7 +1021,7 @@ export default function App() {
       {notice && (
         <div className="notice" role="status">
           <span>{notice}</span>
-          <button onClick={() => setNotice('')} aria-label="إغلاق التنبيه"}>
+          <button onClick={() => setNotice('')} aria-label="إغلاق التنبيه">
             <X size={16} />
           </button>
         </div>
