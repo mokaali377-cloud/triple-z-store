@@ -1,0 +1,5 @@
+
+User-agent: *
+Allow: /
+
+Sitemap: https://triple-z-store.pages.dev/sitemap.xml
