@@ -32,40 +32,67 @@ const demoProducts = [
 const money = n => `${Number(n || 0).toLocaleString('en-US')} ج.م`;
 
 const translations = {
-  'الرئيسية': { en: 'Home', fr: 'Accueil' },
-  'المنتجات': { en: 'Products', fr: 'Produits' },
-  'الشكاوى والتواصل': { en: 'Contact & Support', fr: 'Contact et assistance' },
-  'تسوّق الآن': { en: 'Shop now', fr: 'Acheter' },
-  'اكتشف المجموعة': { en: 'Explore collection', fr: 'Découvrir la collection' },
-  'ابحث عن المنتجات...': { en: 'Search products...', fr: 'Rechercher des produits...' },
-  'بحث': { en: 'Search', fr: 'Rechercher' },
-  'أضف للسلة': { en: 'Add to cart', fr: 'Ajouter au panier' },
-  'غير متوفر': { en: 'Out of stock', fr: 'Épuisé' },
-  'سلة المشتريات': { en: 'Shopping cart', fr: 'Panier' },
-  'السلة لسه فاضية.': { en: 'Your cart is empty.', fr: 'Votre panier est vide.' },
-  'كمّل تسوّق': { en: 'Continue shopping', fr: 'Continuer les achats' },
-  'إتمام الطلب': { en: 'Checkout', fr: 'Commander' },
-  'بيانات التوصيل': { en: 'Delivery details', fr: 'Informations de livraison' },
-  'الاسم بالكامل': { en: 'Full name', fr: 'Nom complet' },
-  'رقم الموبايل': { en: 'Phone number', fr: 'Téléphone' },
-  'العنوان بالتفصيل والمحافظة': { en: 'Full address and governorate', fr: 'Adresse complète et gouvernorat' },
-  'الدفع عند الاستلام — هنأكد الطلب قبل الشحن.': { en: 'Cash on delivery — we will confirm before shipping.', fr: 'Paiement à la livraison — nous confirmerons avant expédition.' },
-  'ابعتلنا رسالة': { en: 'Send us a message', fr: 'Envoyez-nous un message' },
-  'نوع الرسالة': { en: 'Message type', fr: 'Type de message' },
-  'تفاصيل الرسالة': { en: 'Message details', fr: 'Détails du message' },
-  'إرسال الرسالة': { en: 'Send message', fr: 'Envoyer le message' },
-  'دخول الإدارة': { en: 'Admin Login', fr: 'Connexion admin' },
-  'تسجيل الدخول': { en: 'Sign in', fr: 'Se connecter' },
-  'إنشاء حساب': { en: 'Create account', fr: 'Créer un compte' },
-  'البريد الإلكتروني': { en: 'Email address', fr: 'Adresse e-mail' },
-  'كلمة المرور': { en: 'Password', fr: 'Mot de passe' },
-  'اسمك': { en: 'Your name', fr: 'Votre nom' },
-  'طلب منظم': { en: 'Organized ordering', fr: 'Commande organisée' },
-  'بيانات الطلب بتتسجل بأمان': { en: 'Your order details are handled securely.', fr: 'Vos informations de commande sont traitées en sécurité.' },
-  'اختيارات واضحة': { en: 'Clear choices', fr: 'Choix clairs' },
-  'مقاسات وألوان لكل قطعة': { en: 'Sizes and colors for every item', fr: 'Tailles et couleurs pour chaque article' },
-  'ستايل TRIPLE Z': { en: 'TRIPLE Z style', fr: 'Style TRIPLE Z' },
-  'Streetwear بطابع خاص': { en: 'Streetwear with its own identity', fr: 'Streetwear avec une identité unique' },
+  'الرئيسية': { en: 'Home', fr: 'Accueil' , de: 'Startseite'},
+  'المنتجات': { en: 'Products', fr: 'Produits' , de: 'Produkte'},
+  'الشكاوى والتواصل': { en: 'Contact & Support', fr: 'Contact et assistance' , de: 'Kontakt & Support'},
+  'تسوّق الآن': { en: 'Shop now', fr: 'Acheter' , de: 'Jetzt einkaufen'},
+  'اكتشف المجموعة': { en: 'Explore collection', fr: 'Découvrir la collection' , de: 'Kollektion entdecken'},
+  'ابحث عن المنتجات...': { en: 'Search products...', fr: 'Rechercher des produits...' , de: 'Produkte suchen...'},
+  'بحث': { en: 'Search', fr: 'Rechercher' , de: 'Suchen'},
+  'أضف للسلة': { en: 'Add to cart', fr: 'Ajouter au panier' , de: 'In den Warenkorb'},
+  'غير متوفر': { en: 'Out of stock', fr: 'Épuisé' , de: 'Nicht verfügbar'},
+  'سلة المشتريات': { en: 'Shopping cart', fr: 'Panier' , de: 'Warenkorb'},
+  'السلة لسه فاضية.': { en: 'Your cart is empty.', fr: 'Votre panier est vide.' , de: 'Dein Warenkorb ist leer.'},
+  'كمّل تسوّق': { en: 'Continue shopping', fr: 'Continuer les achats' , de: 'Weiter einkaufen'},
+  'إتمام الطلب': { en: 'Checkout', fr: 'Commander' , de: 'Zur Kasse'},
+  'بيانات التوصيل': { en: 'Delivery details', fr: 'Informations de livraison' , de: 'Lieferdaten'},
+  'الاسم بالكامل': { en: 'Full name', fr: 'Nom complet' , de: 'Vollständiger Name'},
+  'رقم الموبايل': { en: 'Phone number', fr: 'Téléphone' , de: 'Telefonnummer'},
+  'العنوان بالتفصيل والمحافظة': { en: 'Full address and governorate', fr: 'Adresse complète et gouvernorat' , de: 'Vollständige Adresse und Gouvernement'},
+  'الدفع عند الاستلام — هنأكد الطلب قبل الشحن.': { en: 'Cash on delivery — we will confirm before shipping.', fr: 'Paiement à la livraison — nous confirmerons avant expédition.' , de: 'Nachnahme – wir bestätigen die Bestellung vor dem Versand.'},
+  'ابعتلنا رسالة': { en: 'Send us a message', fr: 'Envoyez-nous un message' , de: 'Schreib uns'},
+  'نوع الرسالة': { en: 'Message type', fr: 'Type de message' , de: 'Nachrichtentyp'},
+  'تفاصيل الرسالة': { en: 'Message details', fr: 'Détails du message' , de: 'Nachrichtendetails'},
+  'إرسال الرسالة': { en: 'Send message', fr: 'Envoyer le message' , de: 'Nachricht senden'},
+  'دخول الإدارة': { en: 'Admin Login', fr: 'Connexion admin' , de: 'Admin-Anmeldung'},
+  'تسجيل الدخول': { en: 'Sign in', fr: 'Se connecter' , de: 'Anmelden'},
+  'إنشاء حساب': { en: 'Create account', fr: 'Créer un compte' , de: 'Konto erstellen'},
+  'البريد الإلكتروني': { en: 'Email address', fr: 'Adresse e-mail' , de: 'E-Mail-Adresse'},
+  'كلمة المرور': { en: 'Password', fr: 'Mot de passe' , de: 'Passwort'},
+  'اسمك': { en: 'Your name', fr: 'Votre nom' , de: 'Dein Name'},
+  'طلب منظم': { en: 'Organized ordering', fr: 'Commande organisée' , de: 'Strukturierte Bestellung'},
+  'بيانات الطلب بتتسجل بأمان': { en: 'Your order details are handled securely.', fr: 'Vos informations de commande sont traitées en sécurité.' , de: 'Deine Bestelldaten werden sicher verarbeitet.'},
+  'اختيارات واضحة': { en: 'Clear choices', fr: 'Choix clairs' , de: 'Klare Auswahl'},
+  'مقاسات وألوان لكل قطعة': { en: 'Sizes and colors for every item', fr: 'Tailles et couleurs pour chaque article' , de: 'Größen und Farben für jedes Produkt'},
+  'ستايل TRIPLE Z': { en: 'TRIPLE Z style', fr: 'Style TRIPLE Z' , de: 'TRIPLE-Z-Stil'},
+  'Streetwear بطابع خاص': { en: 'Streetwear with its own identity', fr: 'Streetwear avec une identité unique' , de: 'Streetwear mit eigener Identität'},
+
+  'المتجر غير متصل بنظام الحسابات.': { en: 'The account system is not connected.', fr: 'Le système de compte n’est pas connecté.', de: 'Das Kontosystem ist nicht verbunden.' },
+  'كلمة المرور لازم تكون 6 أحرف على الأقل.': { en: 'Password must be at least 6 characters.', fr: 'Le mot de passe doit contenir au moins 6 caractères.', de: 'Das Passwort muss mindestens 6 Zeichen lang sein.' },
+  'ستايل شبابي. تفاصيل مختلفة. اختار القطعة اللي شبهك.': { en: 'Youthful style. Distinct details. Choose the piece that feels like you.', fr: 'Un style jeune. Des détails uniques. Choisissez la pièce qui vous ressemble.', de: 'Junger Stil. Besondere Details. Finde das Teil, das zu dir passt.' },
+  'اختار القطعة والمقاس واللون المناسب ليك.': { en: 'Choose the piece, size, and color that suit you.', fr: 'Choisissez la pièce, la taille et la couleur qui vous conviennent.', de: 'Wähle das passende Produkt, die Größe und die Farbe.' },
+  'المنتجات.': { en: 'Products.', fr: 'Produits.', de: 'Produkte.' },
+  'الشكاوى والتواصل.': { en: 'Contact & Support.', fr: 'Contact et assistance.', de: 'Kontakt & Support.' },
+  'مفيش منتجات مطابقة للبحث حاليًا.': { en: 'No matching products found.', fr: 'Aucun produit correspondant.', de: 'Keine passenden Produkte gefunden.' },
+  'اطلب تصميمك الخاص': { en: 'Request your custom design', fr: 'Demander votre design personnalisé', de: 'Eigenes Design anfragen' },
+  'ابعتلنا رسالة': { en: 'Send us a message', fr: 'Envoyez-nous un message', de: 'Schreib uns eine Nachricht' },
+  'شكوى بخصوص طلب': { en: 'Order complaint', fr: 'Réclamation concernant une commande', de: 'Beschwerde zu einer Bestellung' },
+  'تأخير في التوصيل': { en: 'Delivery delay', fr: 'Retard de livraison', de: 'Lieferverzögerung' },
+  'مشكلة في منتج': { en: 'Product issue', fr: 'Problème de produit', de: 'Produktproblem' },
+  'استفسار': { en: 'Question', fr: 'Question', de: 'Frage' },
+  'اقتراح': { en: 'Suggestion', fr: 'Suggestion', de: 'Vorschlag' },
+  'نوع آخر': { en: 'Other', fr: 'Autre', de: 'Sonstiges' },
+  'اكتب اسمك': { en: 'Enter your name', fr: 'Entrez votre nom', de: 'Gib deinen Namen ein' },
+  'رقم الطلب': { en: 'Order reference', fr: 'Référence de commande', de: 'Bestellnummer' },
+  'اكتب رسالتك هنا...': { en: 'Write your message here...', fr: 'Écrivez votre message ici...', de: 'Schreibe deine Nachricht hier...' },
+  'جارٍ الإرسال...': { en: 'Sending...', fr: 'Envoi...', de: 'Wird gesendet...' },
+  'الإجمالي': { en: 'Total', fr: 'Total', de: 'Gesamt' },
+  'المقاس': { en: 'Size', fr: 'Taille', de: 'Größe' },
+  'اللون': { en: 'Color', fr: 'Couleur', de: 'Farbe' },
+  'إغلاق': { en: 'Close', fr: 'Fermer', de: 'Schließen' },
+  'اختار صورة التصميم': { en: 'Choose a design image', fr: 'Choisir une image du design', de: 'Designbild auswählen' },
+  'تفاصيل التصميم': { en: 'Design details', fr: 'Détails du design', de: 'Designdetails' },
+  'إرسال طلب التصميم': { en: 'Submit design request', fr: 'Envoyer la demande de design', de: 'Designanfrage senden' },
 };
 
 function translate(text, language) {
@@ -128,6 +155,7 @@ export default function App() {
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPassword, setCustomerPassword] = useState('');
   const [customerAuthLoading, setCustomerAuthLoading] = useState(false);
+  const [customerAuthError, setCustomerAuthError] = useState('');
   const t = value => translate(value, language);
   const [drawer, setDrawer] = useState(false);
   const [selected, setSelected] = useState({});
@@ -343,15 +371,16 @@ export default function App() {
   async function submitCustomerAuth(e) {
     e.preventDefault();
     if (!supabase || !isSupabaseConfigured || customerAuthLoading) {
-      setNotice('المتجر غير متصل بنظام الحسابات.');
+      setCustomerAuthError(t('المتجر غير متصل بنظام الحسابات.'));
       return;
     }
     if (customerPassword.length < 6) {
-      setNotice('كلمة المرور لازم تكون 6 أحرف على الأقل.');
+      setCustomerAuthError(t('كلمة المرور لازم تكون 6 أحرف على الأقل.'));
       return;
     }
 
     setCustomerAuthLoading(true);
+    setCustomerAuthError('');
     setNotice('');
     try {
       if (customerAuthMode === 'signup') {
@@ -367,9 +396,17 @@ export default function App() {
           setSession(data.session);
           setCustomerAuthOpen(false);
           setCustomerPassword('');
-          setNotice('تم إنشاء الحساب وتسجيل الدخول بنجاح.');
+          setCustomerAuthError('');
         } else {
-          setNotice('تم إنشاء الحساب. راجع بريدك الإلكتروني لتأكيده، ثم سجّل الدخول.');
+          setCustomerAuthError(
+            language === 'ar'
+              ? 'تم إنشاء الحساب، لكن تسجيل الدخول لم يكتمل. راجع إعداد تأكيد البريد في Supabase أو جرّب تسجيل الدخول.'
+              : language === 'fr'
+                ? "Compte créé, mais la connexion n’a pas abouti. Vérifiez le paramètre de confirmation de l’e-mail dans Supabase."
+                : language === 'de'
+                  ? 'Konto erstellt, aber die Anmeldung war nicht erfolgreich. Prüfe die E-Mail-Bestätigung in Supabase.'
+                  : 'Account created, but sign-in did not complete. Check the email confirmation setting in Supabase.'
+          );
           setCustomerAuthMode('login');
         }
       } else {
@@ -381,11 +418,18 @@ export default function App() {
         setSession(data.session);
         setCustomerAuthOpen(false);
         setCustomerPassword('');
+        setCustomerAuthError('');
         setNotice('تم تسجيل الدخول بنجاح.');
       }
     } catch (error) {
       console.error('Customer authentication error:', error);
-      setNotice(error.message || 'تعذر تسجيل الدخول. راجع بياناتك وحاول مرة أخرى.');
+      setCustomerAuthError(
+        error.message === 'Email not confirmed'
+          ? (language === 'ar' ? 'البريد الإلكتروني غير مؤكَّد. راجع إعدادات تأكيد البريد في Supabase.' : language === 'fr' ? 'E-mail non confirmé. Vérifiez les paramètres de confirmation dans Supabase.' : language === 'de' ? 'E-Mail nicht bestätigt. Prüfe die Bestätigungseinstellungen in Supabase.' : 'Email not confirmed. Check the confirmation settings in Supabase.')
+          : error.message === 'Invalid login credentials'
+            ? (language === 'ar' ? 'الإيميل أو كلمة المرور غير صحيحة.' : language === 'fr' ? 'Adresse e-mail ou mot de passe incorrect.' : language === 'de' ? 'E-Mail-Adresse oder Passwort ist falsch.' : 'Incorrect email or password.')
+            : (error.message || (language === 'ar' ? 'تعذر تسجيل الدخول. راجع بياناتك وحاول مرة أخرى.' : language === 'fr' ? 'Connexion impossible. Vérifiez vos informations.' : language === 'de' ? 'Anmeldung fehlgeschlagen. Bitte überprüfe deine Angaben.' : 'Unable to sign in. Check your details and try again.'))
+      );
     } finally {
       setCustomerAuthLoading(false);
     }
@@ -847,7 +891,7 @@ export default function App() {
 
   function renderProducts() {
     if (!filteredProducts.length) {
-      return <p className="muted">مفيش منتجات مطابقة للبحث حاليًا.</p>;
+      return <p className="muted">{t('مفيش منتجات مطابقة للبحث حاليًا.')}</p>;
     }
 
     return (
@@ -880,7 +924,7 @@ export default function App() {
 
               <div className="product-options">
                 <label>
-                  المقاس
+                  {t('المقاس')}
                   <select
                     value={opts.size}
                     onChange={e => setSelected(old => ({
@@ -894,7 +938,7 @@ export default function App() {
                 </label>
 
                 <label>
-                  اللون
+                  {t('اللون')}
                   <select
                     value={opts.color}
                     onChange={e => setSelected(old => ({
@@ -913,7 +957,7 @@ export default function App() {
                 disabled={Number(product.stock) <= 0}
                 onClick={() => addToCart(product)}
               >
-                {Number(product.stock) <= 0 ? 'غير متوفر' : 'أضف للسلة'}
+                {Number(product.stock) <= 0 ? t('غير متوفر') : t('أضف للسلة')}
                 <Plus size={17} />
               </button>
             </article>
@@ -1136,15 +1180,15 @@ export default function App() {
         <nav className="page-nav" aria-label="القائمة الرئيسية">
           <a className={page === 'home' ? 'active' : ''} href="/"
             onClick={e => { e.preventDefault(); navigate('home'); }}>
-            الرئيسية
+            {t('الرئيسية')}
           </a>
           <a className={page === 'products' ? 'active' : ''} href="/products"
             onClick={e => { e.preventDefault(); navigate('products'); }}>
-            المنتجات
+            {t('المنتجات')}
           </a>
           <a className={page === 'complaints' ? 'active' : ''} href="/complaints"
             onClick={e => { e.preventDefault(); navigate('complaints'); }}>
-            الشكاوى والتواصل
+            {t('الشكاوى والتواصل')}
           </a>
         </nav>
 
@@ -1155,15 +1199,16 @@ export default function App() {
               <option value="ar">العربية</option>
               <option value="en">English</option>
               <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
             </select>
           </label>
           {session && !isAdmin ? (
             <button className="customer-account-button" onClick={customerLogout} title={session.user?.email || ''}>
-              <LogOut size={16} /> {language === 'ar' ? 'تسجيل الخروج' : language === 'fr' ? 'Déconnexion' : 'Sign out'}
+              <LogOut size={16} /> {language === 'ar' ? 'تسجيل الخروج' : language === 'fr' ? 'Déconnexion' : language === 'de' ? 'Abmelden' : 'Sign out'}
             </button>
           ) : (
-            <button className="customer-account-button" onClick={() => { setCustomerAuthMode('login'); setCustomerAuthOpen(true); }}>
-              <UserRound size={16} /> {language === 'ar' ? 'حسابي' : language === 'fr' ? 'Mon compte' : 'My account'}
+            <button className="customer-account-button" onClick={() => { setCustomerAuthError(''); setCustomerAuthMode('login'); setCustomerAuthOpen(true); }}>
+              <UserRound size={16} /> {language === 'ar' ? 'حسابي' : language === 'fr' ? 'Mon compte' : language === 'de' ? 'Mein Konto' : 'My account'}
             </button>
           )}
           <button className="icon-button" aria-label="السلة" onClick={() => setDrawer(true)}>
@@ -1199,7 +1244,7 @@ export default function App() {
                 </p>
                 <div className="hero-actions">
                   <button className="primary-button" onClick={() => navigate('products')}>
-                    تسوّق الآن <ArrowUpRight size={18} />
+                    {t('تسوّق الآن')} <ArrowUpRight size={18} />
                   </button>
                   <button className="secondary-button" onClick={() => setCustomOpen(true)}>
                     <ImagePlus size={18} /> Customize Design
@@ -1225,7 +1270,7 @@ export default function App() {
               <h2>NOT HERE TO<br /><span>BLEND IN.</span></h2>
               <p>TRIPLE Z — هوية مستقلة، ستايل جريء، وتفاصيل معمولة عشان تفرق.</p>
               <button className="primary-button" onClick={() => navigate('products')}>
-                اكتشف المجموعة <ArrowUpRight size={18} />
+                {t('اكتشف المجموعة')} <ArrowUpRight size={18} />
               </button>
             </section>
 
@@ -1289,10 +1334,10 @@ export default function App() {
             </div>
 
             <form className="complaint-form" onSubmit={submitComplaint}>
-              <h2>ابعتلنا رسالة</h2>
+              <h2>{t('ابعتلنا رسالة')}</h2>
 
               <label>
-                نوع الرسالة
+                {t('نوع الرسالة')}
                 <select
                   value={complaintForm.complaint_type}
                   onChange={e => setComplaintForm({
@@ -1309,13 +1354,13 @@ export default function App() {
               </label>
 
               <label>
-                الاسم بالكامل
+                {t('الاسم بالكامل')}
                 <input
                   value={complaintForm.customer_name}
                   onChange={e => setComplaintForm({
                     ...complaintForm, customer_name: e.target.value
                   })}
-                  placeholder="اكتب اسمك"
+                  placeholder={t('اكتب اسمك')}
                   minLength={2}
                   maxLength={100}
                   required
@@ -1323,7 +1368,7 @@ export default function App() {
               </label>
 
               <label>
-                رقم الموبايل
+                {t('رقم الموبايل')}
                 <input
                   type="tel"
                   value={complaintForm.phone}
@@ -1338,7 +1383,7 @@ export default function App() {
               </label>
 
               <label>
-                رقم الطلب <span className="optional-label">(اختياري)</span>
+                {t('رقم الطلب')} <span className="optional-label">({language === 'ar' ? 'اختياري' : language === 'fr' ? 'facultatif' : language === 'de' ? 'optional' : 'optional'})</span>
                 <input
                   value={complaintForm.order_reference}
                   onChange={e => setComplaintForm({
@@ -1350,13 +1395,13 @@ export default function App() {
               </label>
 
               <label>
-                تفاصيل الرسالة
+                {t('تفاصيل الرسالة')}
                 <textarea
                   value={complaintForm.message}
                   onChange={e => setComplaintForm({
                     ...complaintForm, message: e.target.value
                   })}
-                  placeholder="اكتب رسالتك هنا..."
+                  placeholder={t('اكتب رسالتك هنا...')}
                   minLength={5}
                   maxLength={3000}
                   rows={6}
@@ -1366,7 +1411,7 @@ export default function App() {
 
               <button className="primary-button full-button" type="submit"
                 disabled={complaintLoading}>
-                {complaintLoading ? 'جارٍ الإرسال...' : 'إرسال الرسالة'}
+                {complaintLoading ? t('جارٍ الإرسال...') : t('إرسال الرسالة')}
                 <Send size={17} />
               </button>
             </form>
@@ -1379,27 +1424,24 @@ export default function App() {
           <span>TRIPLE</span><b>Z</b>
         </a>
         <div className="footer-links">
-          <a href="/" onClick={e => { e.preventDefault(); navigate('home'); }}>الرئيسية</a>
-          <a href="/products" onClick={e => { e.preventDefault(); navigate('products'); }}>المنتجات</a>
-          <a href="/complaints" onClick={e => { e.preventDefault(); navigate('complaints'); }}>الشكاوى والتواصل</a>
+          <a href="/" onClick={e => { e.preventDefault(); navigate('home'); }}>{t('الرئيسية')}</a>
+          <a href="/products" onClick={e => { e.preventDefault(); navigate('products'); }}>{t('المنتجات')}</a>
+          <a href="/complaints" onClick={e => { e.preventDefault(); navigate('complaints'); }}>{t('الشكاوى والتواصل')}</a>
         </div>
         <span>© 2026 TRIPLE Z. ALL RIGHTS RESERVED.</span>
-        <button className="admin-footer-link" onClick={() => setAdminOpen(true)}>
-          <LogIn size={15} /> Admin Login
-        </button>
       </footer>
 
       {customerAuthOpen && (
-        <div className="drawer-backdrop auth-backdrop" onClick={() => setCustomerAuthOpen(false)}>
+        <div className="drawer-backdrop auth-backdrop" onClick={() => { setCustomerAuthOpen(false); setCustomerAuthError(''); }}>
           <section className="customer-auth-modal" onClick={e => e.stopPropagation()}>
             <div className="drawer-heading">
               <div>
                 <p className="eyebrow">TRIPLE Z ACCOUNT</p>
                 <h2>{customerAuthMode === 'signup'
-                  ? (language === 'ar' ? 'إنشاء حساب جديد' : language === 'fr' ? 'Créer un compte' : 'Create your account')
-                  : (language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Connexion' : 'Sign in')}</h2>
+                  ? (language === 'ar' ? 'إنشاء حساب جديد' : language === 'fr' ? 'Créer un compte' : language === 'de' ? 'Neues Konto erstellen' : 'Create your account')
+                  : (language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Connexion' : language === 'de' ? 'Anmelden' : 'Sign in')}</h2>
               </div>
-              <button className="icon-button" onClick={() => setCustomerAuthOpen(false)} aria-label="Close">
+              <button className="icon-button" onClick={() => { setCustomerAuthOpen(false); setCustomerAuthError(''); }} aria-label="Close">
                 <X />
               </button>
             </div>
@@ -1408,35 +1450,43 @@ export default function App() {
                 ? 'سجّل دخولك أو أنشئ حسابًا قبل تأكيد طلبك.'
                 : language === 'fr'
                   ? 'Connectez-vous ou créez un compte avant de confirmer votre commande.'
-                  : 'Sign in or create an account before confirming your order.'}
+                  : language === 'de'
+                    ? 'Melde dich an oder erstelle ein Konto, bevor du die Bestellung bestätigst.'
+                    : 'Sign in or create an account before confirming your order.'}
             </p>
+            {customerAuthError && (
+              <div className="auth-error" role="alert" aria-live="polite"
+                style={{ margin: '12px 0', padding: '12px 14px', border: '1px solid #a33', borderRadius: '10px', color: 'inherit', background: 'rgba(180,35,35,.10)' }}>
+                {customerAuthError}
+              </div>
+            )}
             <form className="customer-auth-form" onSubmit={submitCustomerAuth}>
               {customerAuthMode === 'signup' && (
                 <label>
-                  {language === 'ar' ? 'الاسم بالكامل' : language === 'fr' ? 'Nom complet' : 'Full name'}
+                  {language === 'ar' ? 'الاسم بالكامل' : language === 'fr' ? 'Nom complet' : language === 'de' ? 'Vollständiger Name' : 'Full name'}
                   <input value={customerName} onChange={e => setCustomerName(e.target.value)} minLength={2} required autoComplete="name" />
                 </label>
               )}
               <label>
-                {language === 'ar' ? 'البريد الإلكتروني' : language === 'fr' ? 'Adresse e-mail' : 'Email address'}
+                {language === 'ar' ? 'البريد الإلكتروني' : language === 'fr' ? 'Adresse e-mail' : language === 'de' ? 'E-Mail-Adresse' : 'Email address'}
                 <input type="email" value={customerEmail} onChange={e => setCustomerEmail(e.target.value)} required autoComplete="email" />
               </label>
               <label>
-                {language === 'ar' ? 'كلمة المرور (6 أحرف على الأقل)' : language === 'fr' ? 'Mot de passe (6 caractères minimum)' : 'Password (at least 6 characters)'}
+                {language === 'ar' ? 'كلمة المرور (6 أحرف على الأقل)' : language === 'fr' ? 'Mot de passe (6 caractères minimum)' : language === 'de' ? 'Passwort (mindestens 6 Zeichen)' : 'Password (at least 6 characters)'}
                 <input type="password" value={customerPassword} onChange={e => setCustomerPassword(e.target.value)} minLength={6} required autoComplete={customerAuthMode === 'signup' ? 'new-password' : 'current-password'} />
               </label>
               <button className="primary-button full-button" type="submit" disabled={customerAuthLoading}>
                 {customerAuthLoading
-                  ? (language === 'ar' ? 'جارٍ المعالجة...' : language === 'fr' ? 'Traitement...' : 'Please wait...')
+                  ? (language === 'ar' ? 'جارٍ المعالجة...' : language === 'fr' ? 'Traitement...' : language === 'de' ? 'Bitte warten...' : 'Please wait...')
                   : customerAuthMode === 'signup'
-                    ? (language === 'ar' ? 'إنشاء حساب' : language === 'fr' ? 'Créer un compte' : 'Create account')
-                    : (language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Se connecter' : 'Sign in')}
+                    ? (language === 'ar' ? 'إنشاء حساب' : language === 'fr' ? 'Créer un compte' : language === 'de' ? 'Konto erstellen' : 'Create account')
+                    : (language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Se connecter' : language === 'de' ? 'Anmelden' : 'Sign in')}
               </button>
             </form>
-            <button className="auth-mode-toggle" type="button" onClick={() => setCustomerAuthMode(mode => mode === 'login' ? 'signup' : 'login')}>
+            <button className="auth-mode-toggle" type="button" onClick={() => { setCustomerAuthError(''); setCustomerAuthMode(mode => mode === 'login' ? 'signup' : 'login'); }}>
               {customerAuthMode === 'login'
-                ? (language === 'ar' ? 'ليس لديك حساب؟ إنشاء حساب' : language === 'fr' ? 'Pas de compte ? Créer un compte' : "Don't have an account? Create one")
-                : (language === 'ar' ? 'لديك حساب بالفعل؟ تسجيل الدخول' : language === 'fr' ? 'Déjà un compte ? Se connecter' : 'Already have an account? Sign in')}
+                ? (language === 'ar' ? 'ليس لديك حساب؟ إنشاء حساب' : language === 'fr' ? 'Pas de compte ? Créer un compte' : language === 'de' ? 'Noch kein Konto? Konto erstellen' : "Don't have an account? Create one")
+                : (language === 'ar' ? 'لديك حساب بالفعل؟ تسجيل الدخول' : language === 'fr' ? 'Déjà un compte ? Se connecter' : language === 'de' ? 'Du hast schon ein Konto? Anmelden' : 'Already have an account? Sign in')}
             </button>
           </section>
         </div>
@@ -1462,14 +1512,14 @@ export default function App() {
 
             <form className="custom-form" onSubmit={submitCustomDesign}>
               <label>
-                الاسم بالكامل
+                {t('الاسم بالكامل')}
                 <input value={customName}
                   onChange={e => setCustomName(e.target.value)}
-                  placeholder="اكتب اسمك" minLength={2} required />
+                  placeholder={t('اكتب اسمك')} minLength={2} required />
               </label>
 
               <label>
-                رقم الموبايل
+                {t('رقم الموبايل')}
                 <input type="tel" value={customPhone}
                   onChange={e => setCustomPhone(e.target.value)}
                   placeholder="01xxxxxxxxx" minLength={8} required />
@@ -1577,7 +1627,7 @@ export default function App() {
                 </div>
 
                 <div className="cart-total">
-                  <span>الإجمالي</span>
+                  <span>{t('الإجمالي')}</span>
                   <strong>{money(total)}</strong>
                 </div>
 
@@ -1585,6 +1635,7 @@ export default function App() {
                   <button className="primary-button full-button" onClick={() => {
                     setCheckout(true);
                     if (!session || isAdmin) {
+                      setCustomerAuthError('');
                       setCustomerAuthMode('login');
                       setCustomerAuthOpen(true);
                     }
@@ -1600,12 +1651,12 @@ export default function App() {
                     <input placeholder={t("رقم الموبايل")} type="tel" value={form.phone}
                       onChange={e => setForm({ ...form, phone: e.target.value })}
                       required minLength={8} />
-                    <textarea placeholder={language === "ar" ? "العنوان بالتفصيل والمحافظة" : language === "fr" ? "Adresse complète et gouvernorat" : "Full address and governorate"} value={form.address}
+                    <textarea placeholder={t("العنوان بالتفصيل والمحافظة")} value={form.address}
                       onChange={e => setForm({ ...form, address: e.target.value })}
                       required minLength={8} />
                     <p className="muted">{t("الدفع عند الاستلام — هنأكد الطلب قبل الشحن.")}</p>
                     <button className="primary-button full-button" type="submit" disabled={loading}>
-                      {loading ? 'جارٍ تسجيل الطلب...' : `تأكيد الطلب — ${money(total)}`}
+                       {loading ? (language === 'ar' ? 'جارٍ تسجيل الطلب...' : language === 'fr' ? 'Enregistrement...' : language === 'de' ? 'Bestellung wird gespeichert...' : 'Saving order...') : `${language === 'ar' ? 'تأكيد الطلب' : language === 'fr' ? 'Confirmer la commande' : language === 'de' ? 'Bestellung bestätigen' : 'Confirm order'} — ${money(total)}`}
                     </button>
                   </form>
                 )}
