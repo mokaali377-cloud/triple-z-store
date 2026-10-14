@@ -29,7 +29,11 @@ const demoProducts = [
   }
 ];
 
-const money = n => `${Number(n || 0).toLocaleString('en-US')} ج.م`;
+const money = (n, language = 'ar') => {
+  const amount = Number(n || 0).toLocaleString('en-US');
+  const currency = language === 'ar' ? 'ج.م' : 'EGP';
+  return `${amount} ${currency}`;
+};
 
 const translations = {
   'الرئيسية': { en: 'Home', fr: 'Accueil' , de: 'Startseite'},
@@ -93,6 +97,138 @@ const translations = {
   'اختار صورة التصميم': { en: 'Choose a design image', fr: 'Choisir une image du design', de: 'Designbild auswählen' },
   'تفاصيل التصميم': { en: 'Design details', fr: 'Détails du design', de: 'Designdetails' },
   'إرسال طلب التصميم': { en: 'Submit design request', fr: 'Envoyer la demande de design', de: 'Designanfrage senden' },
+  'لوحة الإدارة': { en: 'Admin panel', fr: 'Panneau d’administration', de: 'Adminbereich' },
+  'إغلاق': { en: 'Close', fr: 'Fermer', de: 'Schließen' },
+  'جارٍ التحقق من تسجيل الدخول...': { en: 'Checking sign-in...', fr: 'Vérification de la connexion...', de: 'Anmeldung wird überprüft...' },
+  'سجّل دخولك بحساب المدير المصرّح له داخل Supabase.': { en: 'Sign in with the authorized admin account in Supabase.', fr: 'Connectez-vous avec le compte administrateur autorisé dans Supabase.', de: 'Melde dich mit dem autorisierten Administratorkonto in Supabase an.' },
+  'الحساب الحالي غير مخوّل لإدارة المتجر.': { en: 'This account is not authorized to manage the store.', fr: 'Ce compte n’est pas autorisé à gérer la boutique.', de: 'Dieses Konto ist nicht zur Verwaltung des Shops berechtigt.' },
+  'تم التحقق من دور المدير': { en: 'Admin role verified', fr: 'Rôle administrateur vérifié', de: 'Adminrolle bestätigt' },
+  'خروج': { en: 'Sign out', fr: 'Déconnexion', de: 'Abmelden' },
+  'الطلبات': { en: 'Orders', fr: 'Commandes', de: 'Bestellungen' },
+  'الشكاوى': { en: 'Complaints', fr: 'Réclamations', de: 'Beschwerden' },
+  'إضافة منتج': { en: 'Add product', fr: 'Ajouter un produit', de: 'Produkt hinzufügen' },
+  'اسم المنتج': { en: 'Product name', fr: 'Nom du produit', de: 'Produktname' },
+  'السعر بالجنيه': { en: 'Price in EGP', fr: 'Prix en EGP', de: 'Preis in EGP' },
+  'رابط الصورة': { en: 'Image URL', fr: 'URL de l’image', de: 'Bild-URL' },
+  'الوصف': { en: 'Description', fr: 'Description', de: 'Beschreibung' },
+  'المقاسات مفصولة بفواصل': { en: 'Sizes separated by commas', fr: 'Tailles séparées par des virgules', de: 'Größen durch Kommas trennen' },
+  'الألوان مفصولة بفواصل': { en: 'Colors separated by commas', fr: 'Couleurs séparées par des virgules', de: 'Farben durch Kommas trennen' },
+  'المخزون': { en: 'Stock', fr: 'Stock', de: 'Lagerbestand' },
+  'حفظ المنتج': { en: 'Save product', fr: 'Enregistrer le produit', de: 'Produkt speichern' },
+  'تحديث': { en: 'Refresh', fr: 'Actualiser', de: 'Aktualisieren' },
+  'لا توجد طلبات محملة. اضغط تحديث.': { en: 'No orders loaded. Click Refresh.', fr: 'Aucune commande chargée. Cliquez sur Actualiser.', de: 'Keine Bestellungen geladen. Klicke auf Aktualisieren.' },
+  'حالة المتابعة': { en: 'Follow-up status', fr: 'État du suivi', de: 'Bearbeitungsstatus' },
+  'لا توجد شكاوى محملة. اضغط تحديث.': { en: 'No complaints loaded. Click Refresh.', fr: 'Aucune réclamation chargée. Cliquez sur Actualiser.', de: 'Keine Beschwerden geladen. Klicke auf Aktualisieren.' },
+  'ستايل شبابي. تفاصيل مختلفة. اختار القطعة اللي شبهك.': { en: 'Youthful style. Distinct details. Choose the piece that feels like you.', fr: 'Un style jeune. Des détails uniques. Choisissez la pièce qui vous ressemble.', de: 'Junger Stil. Besondere Details. Finde das Teil, das zu dir passt.' },
+  'هوية مستقلة، ستايل جريء، وتفاصيل معمولة عشان تفرق.': { en: 'An independent identity, bold style, and details that stand out.', fr: 'Une identité indépendante, un style audacieux et des détails qui se démarquent.', de: 'Eine eigenständige Identität, ein mutiger Stil und besondere Details.' },
+  'اختار القطعة والمقاس واللون المناسب ليك.': { en: 'Choose the piece, size, and color that suit you.', fr: 'Choisissez la pièce, la taille et la couleur qui vous conviennent.', de: 'Wähle das passende Produkt, die Größe und die Farbe.' },
+  'البحث عن المنتجات': { en: 'Search products', fr: 'Rechercher des produits', de: 'Produkte suchen' },
+  'مسح البحث': { en: 'Clear search', fr: 'Effacer la recherche', de: 'Suche löschen' },
+  'دي معاينة تجريبية بمنتجات مؤقتة. قاعدة البيانات غير متصلة.': { en: 'This is a demo preview with temporary products. The database is not connected.', fr: 'Ceci est un aperçu de démonstration avec des produits temporaires. La base de données n’est pas connectée.', de: 'Dies ist eine Vorschau mit temporären Produkten. Die Datenbank ist nicht verbunden.' },
+  'مثال: TZ-123456': { en: 'Example: TZ-123456', fr: 'Exemple : TZ-123456', de: 'Beispiel: TZ-123456' },
+  'اختياري': { en: 'Optional', fr: 'Facultatif', de: 'Optional' },
+  'ارفع صورة التصميم اللي في بالك واكتب تفاصيله، وفريق TRIPLE Z هيراجع طلبك.': { en: 'Upload your design image and describe it. The TRIPLE Z team will review your request.', fr: 'Téléversez l’image de votre design et décrivez-le. L’équipe TRIPLE Z examinera votre demande.', de: 'Lade dein Designbild hoch und beschreibe es. Das TRIPLE-Z-Team prüft deine Anfrage.' },
+  'PNG أو JPG — بحد أقصى 5 ميجابايت': { en: 'PNG or JPG — up to 5 MB', fr: 'PNG ou JPG — 5 Mo maximum', de: 'PNG oder JPG — maximal 5 MB' },
+  'إزالة الصورة': { en: 'Remove image', fr: 'Supprimer l’image', de: 'Bild entfernen' },
+  'مثلاً: لون الهودي، مكان التصميم، المقاس...': { en: 'For example: hoodie color, design placement, size...', fr: 'Exemple : couleur du sweat, emplacement du design, taille...', de: 'Zum Beispiel: Hoodie-Farbe, Position des Designs, Größe...' },
+  'جارٍ إرسال طلبك...': { en: 'Submitting your request...', fr: 'Envoi de votre demande...', de: 'Anfrage wird gesendet...' },
+  'إغلاق السلة': { en: 'Close cart', fr: 'Fermer le panier', de: 'Warenkorb schließen' },
+  'تقليل الكمية': { en: 'Decrease quantity', fr: 'Diminuer la quantité', de: 'Menge verringern' },
+  'زيادة الكمية': { en: 'Increase quantity', fr: 'Augmenter la quantité', de: 'Menge erhöhen' },
+  'المنتج غير متوفر حاليًا.': { en: 'This product is currently unavailable.', fr: 'Ce produit est actuellement indisponible.', de: 'Dieses Produkt ist derzeit nicht verfügbar.' },
+  'الكمية المطلوبة أكبر من المخزون المتاح.': { en: 'Requested quantity exceeds available stock.', fr: 'La quantité demandée dépasse le stock disponible.', de: 'Die gewünschte Menge übersteigt den verfügbaren Bestand.' },
+  'اتضاف للسلة بنجاح.': { en: 'Added to cart successfully.', fr: 'Ajouté au panier.', de: 'Erfolgreich in den Warenkorb gelegt.' },
+  'السلة فاضية. أضف منتجًا أولًا.': { en: 'Your cart is empty. Add a product first.', fr: 'Votre panier est vide. Ajoutez d’abord un produit.', de: 'Dein Warenkorb ist leer. Füge zuerst ein Produkt hinzu.' },
+  'لازم تسجل دخول بحساب العميل قبل تأكيد الطلب.': { en: 'Sign in with your customer account before confirming the order.', fr: 'Connectez-vous à votre compte client avant de confirmer la commande.', de: 'Melde dich vor der Bestätigung mit deinem Kundenkonto an.' },
+  'راجع الاسم ورقم الموبايل والعنوان.': { en: 'Check the name, phone number, and address.', fr: 'Vérifiez le nom, le numéro de téléphone et l’adresse.', de: 'Bitte überprüfe Name, Telefonnummer und Adresse.' },
+  'ماقدرناش نسجل الطلب. حاول مرة تانية.': { en: 'We could not save the order. Please try again.', fr: 'Impossible d’enregistrer la commande. Réessayez.', de: 'Die Bestellung konnte nicht gespeichert werden. Bitte versuche es erneut.' },
+  'حصل خطأ أثناء تسجيل الطلب. حاول مرة تانية.': { en: 'An error occurred while submitting the order. Please try again.', fr: 'Une erreur est survenue lors de la commande. Réessayez.', de: 'Beim Absenden der Bestellung ist ein Fehler aufgetreten. Bitte versuche es erneut.' },
+  'راجع الاسم ورقم الموبايل وتفاصيل الرسالة.': { en: 'Check your name, phone number, and message details.', fr: 'Vérifiez votre nom, votre téléphone et les détails du message.', de: 'Bitte überprüfe Name, Telefonnummer und Nachricht.' },
+  'تعذر إرسال الرسالة. حاول مرة تانية.': { en: 'Could not send the message. Please try again.', fr: 'Impossible d’envoyer le message. Réessayez.', de: 'Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.' },
+  'تم إرسال رسالتك بنجاح. فريق TRIPLE Z هيراجعها.': { en: 'Your message was sent successfully. The TRIPLE Z team will review it.', fr: 'Votre message a été envoyé. L’équipe TRIPLE Z l’examinera.', de: 'Deine Nachricht wurde gesendet. Das TRIPLE-Z-Team wird sie prüfen.' },
+  'حصل خطأ أثناء إرسال الرسالة.': { en: 'An error occurred while sending the message.', fr: 'Une erreur est survenue lors de l’envoi du message.', de: 'Beim Senden der Nachricht ist ein Fehler aufgetreten.' },
+  'نظام الشكاوى غير متصل بقاعدة البيانات.': { en: 'The support system is not connected to the database.', fr: 'Le système d’assistance n’est pas connecté à la base de données.', de: 'Das Supportsystem ist nicht mit der Datenbank verbunden.' },
+  'نظام الطلبات المخصصة غير متصل بقاعدة البيانات.': { en: 'Custom requests are not connected to the database.', fr: 'Les demandes personnalisées ne sont pas connectées à la base de données.', de: 'Individuelle Anfragen sind nicht mit der Datenbank verbunden.' },
+  'اكتب اسمك ورقم موبايل صحيح.': { en: 'Enter your name and a valid phone number.', fr: 'Saisissez votre nom et un numéro de téléphone valide.', de: 'Gib deinen Namen und eine gültige Telefonnummer ein.' },
+  'اختار صورة التصميم الأول.': { en: 'Choose a design image first.', fr: 'Choisissez d’abord une image du design.', de: 'Wähle zuerst ein Designbild aus.' },
+  'اختار ملف صورة صالح.': { en: 'Choose a valid image file.', fr: 'Choisissez un fichier image valide.', de: 'Wähle eine gültige Bilddatei aus.' },
+  'حجم الصورة لازم يكون 5 ميجابايت أو أقل.': { en: 'The image must be 5 MB or smaller.', fr: 'L’image doit faire 5 Mo ou moins.', de: 'Das Bild darf höchstens 5 MB groß sein.' },
+  'رفع الصورة لم ينجح. لازم نراجع إعدادات Storage في Supabase.': { en: 'Image upload failed. Check Supabase Storage settings.', fr: 'Échec du téléversement. Vérifiez les paramètres Storage de Supabase.', de: 'Bild-Upload fehlgeschlagen. Prüfe die Supabase-Storage-Einstellungen.' },
+  'الصورة اترفعت لكن تعذر الحصول على رابطها.': { en: 'The image uploaded, but its URL could not be retrieved.', fr: 'L’image a été téléversée, mais son URL est introuvable.', de: 'Das Bild wurde hochgeladen, aber die URL konnte nicht abgerufen werden.' },
+  'تم إرسال طلب التصميم المخصص بنجاح. فريق TRIPLE Z هيراجعه.': { en: 'Custom design request sent successfully. The TRIPLE Z team will review it.', fr: 'Demande de design envoyée. L’équipe TRIPLE Z l’examinera.', de: 'Designanfrage erfolgreich gesendet. Das TRIPLE-Z-Team wird sie prüfen.' },
+  'حصل خطأ أثناء إرسال التصميم. حاول مرة تانية.': { en: 'An error occurred while sending the design. Please try again.', fr: 'Une erreur est survenue lors de l’envoi du design. Réessayez.', de: 'Beim Senden des Designs ist ein Fehler aufgetreten. Bitte versuche es erneut.' },
+  'بيانات الدخول غير صحيحة أو تعذر تسجيل الدخول.': { en: 'Invalid credentials or sign-in failed.', fr: 'Identifiants incorrects ou échec de connexion.', de: 'Ungültige Anmeldedaten oder Anmeldung fehlgeschlagen.' },
+  'الحساب ده مش مخوّل لإدارة المتجر.': { en: 'This account is not authorized to manage the store.', fr: 'Ce compte n’est pas autorisé à gérer la boutique.', de: 'Dieses Konto darf den Shop nicht verwalten.' },
+  'حصل خطأ أثناء تسجيل الدخول.': { en: 'An error occurred while signing in.', fr: 'Une erreur est survenue lors de la connexion.', de: 'Beim Anmelden ist ein Fehler aufgetreten.' },
+  'غير مسموح بعرض الطلبات.': { en: 'You are not allowed to view orders.', fr: 'Vous n’êtes pas autorisé à consulter les commandes.', de: 'Du darfst Bestellungen nicht ansehen.' },
+  'تعذر تحميل الطلبات. راجع صلاحيات حساب الإدارة.': { en: 'Could not load orders. Check admin permissions.', fr: 'Impossible de charger les commandes. Vérifiez les droits administrateur.', de: 'Bestellungen konnten nicht geladen werden. Prüfe die Admin-Berechtigungen.' },
+  'غير مسموح بعرض الشكاوى.': { en: 'You are not allowed to view complaints.', fr: 'Vous n’êtes pas autorisé à consulter les réclamations.', de: 'Du darfst Beschwerden nicht ansehen.' },
+  'تعذر تحميل الشكاوى. راجع صلاحيات حساب الإدارة.': { en: 'Could not load complaints. Check admin permissions.', fr: 'Impossible de charger les réclamations. Vérifiez les droits administrateur.', de: 'Beschwerden konnten nicht geladen werden. Prüfe die Admin-Berechtigungen.' },
+  'غير مسموح بتعديل الشكاوى.': { en: 'You are not allowed to update complaints.', fr: 'Vous n’êtes pas autorisé à modifier les réclamations.', de: 'Du darfst Beschwerden nicht ändern.' },
+  'حالة الشكوى غير صحيحة.': { en: 'Invalid complaint status.', fr: 'Statut de réclamation invalide.', de: 'Ungültiger Beschwerdestatus.' },
+  'تعذر تحديث حالة الشكوى.': { en: 'Could not update complaint status.', fr: 'Impossible de mettre à jour le statut.', de: 'Beschwerdestatus konnte nicht aktualisiert werden.' },
+  'تم تحديث حالة الشكوى.': { en: 'Complaint status updated.', fr: 'Statut de réclamation mis à jour.', de: 'Beschwerdestatus aktualisiert.' },
+  'غير مسموح بإضافة المنتجات.': { en: 'You are not allowed to add products.', fr: 'Vous n’êtes pas autorisé à ajouter des produits.', de: 'Du darfst keine Produkte hinzufügen.' },
+  'راجع اسم المنتج والسعر والمخزون.': { en: 'Check the product name, price, and stock.', fr: 'Vérifiez le nom, le prix et le stock du produit.', de: 'Prüfe Produktname, Preis und Lagerbestand.' },
+  'تعذر إضافة المنتج. تأكد من صلاحيات المدير.': { en: 'Could not add product. Check admin permissions.', fr: 'Impossible d’ajouter le produit. Vérifiez les droits administrateur.', de: 'Produkt konnte nicht hinzugefügt werden. Prüfe die Admin-Berechtigungen.' },
+  'تمت إضافة المنتج بنجاح.': { en: 'Product added successfully.', fr: 'Produit ajouté avec succès.', de: 'Produkt erfolgreich hinzugefügt.' },
+  'غير مسموح بتعديل الطلبات.': { en: 'You are not allowed to update orders.', fr: 'Vous n’êtes pas autorisé à modifier les commandes.', de: 'Du darfst Bestellungen nicht ändern.' },
+  'حالة الطلب غير صحيحة.': { en: 'Invalid order status.', fr: 'Statut de commande invalide.', de: 'Ungültiger Bestellstatus.' },
+  'تعذر تحديث حالة الطلب.': { en: 'Could not update order status.', fr: 'Impossible de mettre à jour le statut de la commande.', de: 'Bestellstatus konnte nicht aktualisiert werden.' },
+  'تم تحديث حالة الطلب.': { en: 'Order status updated.', fr: 'Statut de commande mis à jour.', de: 'Bestellstatus aktualisiert.' },
+  'تعذر تحميل بيانات المتجر. حاول تحديث الصفحة.': { en: 'Could not load store data. Try refreshing the page.', fr: 'Impossible de charger les données de la boutique. Actualisez la page.', de: 'Shopdaten konnten nicht geladen werden. Aktualisiere die Seite.' },
+  'تعذر تسجيل الخروج. حاول مرة أخرى.': { en: 'Could not sign out. Please try again.', fr: 'Impossible de se déconnecter. Réessayez.', de: 'Abmelden fehlgeschlagen. Bitte versuche es erneut.' },
+  'إرسال طلب التصميم': { en: 'Submit design request', fr: 'Envoyer la demande de design', de: 'Designanfrage senden' },
+  'كمّل تسوّق': { en: 'Continue shopping', fr: 'Continuer les achats', de: 'Weiter einkaufen' },
+  'YOUR IDEA / OUR STYLE': { en: 'YOUR IDEA / OUR STYLE', fr: 'VOTRE IDÉE / NOTRE STYLE', de: 'DEINE IDEE / UNSER STIL' },
+  'Customize Design': { en: 'Customize Design', fr: 'Personnaliser le design', de: 'Design anpassen' },
+  'جديدة': { en: 'New', fr: 'Nouvelle', de: 'Neu' },
+  'قيد المراجعة': { en: 'In review', fr: 'En cours d’examen', de: 'In Bearbeitung' },
+  'تم الحل': { en: 'Resolved', fr: 'Résolue', de: 'Gelöst' },
+  'جديد': { en: 'New', fr: 'Nouvelle', de: 'Neu' },
+  'تم التأكيد': { en: 'Confirmed', fr: 'Confirmée', de: 'Bestätigt' },
+  'تم الشحن': { en: 'Shipped', fr: 'Expédiée', de: 'Versandt' },
+  'تم التسليم': { en: 'Delivered', fr: 'Livrée', de: 'Zugestellt' },
+  'ملغي': { en: 'Cancelled', fr: 'Annulée', de: 'Storniert' },
+  'طلب': { en: 'Order', fr: 'Commande', de: 'Bestellung' },
+  'رسالة': { en: 'Message', fr: 'Message', de: 'Nachricht' },
+  'رقم الطلب: ': { en: 'Order reference: ', fr: 'Référence de commande : ', de: 'Bestellnummer: ' },
+  'تأخير في التوصيل': { en: 'Delivery delay', fr: 'Retard de livraison', de: 'Lieferverzögerung' },
+  'مشكلة في منتج': { en: 'Product issue', fr: 'Problème de produit', de: 'Produktproblem' },
+  'استفسار': { en: 'Question', fr: 'Question', de: 'Frage' },
+  'اقتراح': { en: 'Suggestion', fr: 'Suggestion', de: 'Vorschlag' },
+  'نوع آخر': { en: 'Other', fr: 'Autre', de: 'Sonstiges' },
+  'طلب منظم': { en: 'Organized ordering', fr: 'Commande organisée', de: 'Strukturierte Bestellung' },
+  'بيانات الطلب بتتسجل بأمان': { en: 'Your order details are handled securely.', fr: 'Vos informations de commande sont traitées en sécurité.', de: 'Deine Bestelldaten werden sicher verarbeitet.' },
+  'اختيارات واضحة': { en: 'Clear choices', fr: 'Choix clairs', de: 'Klare Auswahl' },
+  'مقاسات وألوان لكل قطعة': { en: 'Sizes and colors for every item', fr: 'Tailles et couleurs pour chaque article', de: 'Größen und Farben für jedes Produkt' },
+  'ستايل TRIPLE Z': { en: 'TRIPLE Z style', fr: 'Style TRIPLE Z', de: 'TRIPLE-Z-Stil' },
+  'Streetwear بطابع خاص': { en: 'Streetwear with its own identity', fr: 'Streetwear avec une identité unique', de: 'Streetwear mit eigener Identität' },
+  'جديدة': { en: 'New', fr: 'Nouvelle', de: 'Neu' },
+  'قيد المراجعة': { en: 'In review', fr: 'En cours d’examen', de: 'In Bearbeitung' },
+  'تم الحل': { en: 'Resolved', fr: 'Résolue', de: 'Gelöst' },
+  'جديد': { en: 'New', fr: 'Nouveau', de: 'Neu' },
+  'تم التأكيد': { en: 'Confirmed', fr: 'Confirmée', de: 'Bestätigt' },
+  'تم الشحن': { en: 'Shipped', fr: 'Expédiée', de: 'Versandt' },
+  'تم التسليم': { en: 'Delivered', fr: 'Livrée', de: 'Zugestellt' },
+  'ملغي': { en: 'Cancelled', fr: 'Annulée', de: 'Storniert' },
+  'تسجيل الخروج': { en: 'Sign out', fr: 'Déconnexion', de: 'Abmelden' },
+  'تسجيل الدخول': { en: 'Sign in', fr: 'Se connecter', de: 'Anmelden' },
+  'إرسال الرسالة': { en: 'Send message', fr: 'Envoyer le message', de: 'Nachricht senden' },
+  'الاسم بالكامل': { en: 'Full name', fr: 'Nom complet', de: 'Vollständiger Name' },
+  'رقم الموبايل': { en: 'Phone number', fr: 'Téléphone', de: 'Telefonnummer' },
+  'رقم الطلب': { en: 'Order reference', fr: 'Référence de commande', de: 'Bestellnummer' },
+  'اكتب اسمك': { en: 'Enter your name', fr: 'Entrez votre nom', de: 'Gib deinen Namen ein' },
+  'تفاصيل الرسالة': { en: 'Message details', fr: 'Détails du message', de: 'Nachrichtendetails' },
+  'اكتب رسالتك هنا...': { en: 'Write your message here...', fr: 'Écrivez votre message ici...', de: 'Schreibe deine Nachricht hier...' },
+  'جارٍ الإرسال...': { en: 'Sending...', fr: 'Envoi...', de: 'Wird gesendet...' },
+  'إتمام الطلب': { en: 'Checkout', fr: 'Commander', de: 'Zur Kasse' },
+  'سلة المشتريات': { en: 'Shopping cart', fr: 'Panier', de: 'Warenkorb' },
+  'الإجمالي': { en: 'Total', fr: 'Total', de: 'Gesamt' },
+  'بيانات التوصيل': { en: 'Delivery details', fr: 'Informations de livraison', de: 'Lieferdaten' },
+  'الدفع عند الاستلام — هنأكد الطلب قبل الشحن.': { en: 'Cash on delivery — we will confirm before shipping.', fr: 'Paiement à la livraison — nous confirmerons avant expédition.', de: 'Nachnahme – wir bestätigen die Bestellung vor dem Versand.' },
+  'العنوان بالتفصيل والمحافظة': { en: 'Full address and governorate', fr: 'Adresse complète et gouvernorat', de: 'Vollständige Adresse und Gouvernement' },
+  'تسوّق الآن': { en: 'Shop now', fr: 'Acheter', de: 'Jetzt einkaufen' },
 };
 
 function translate(text, language) {
@@ -532,9 +668,21 @@ export default function App() {
       setDrawer(false);
       setForm({ customer_name: '', phone: '', address: '' });
 
-      setNotice(emailSent
-        ? `تم تسجيل طلبك بنجاح! الرقم المرجعي ${orderReference}، واتبعث إشعار Gmail.`
-        : `تم تسجيل الطلب بنجاح! الرقم المرجعي ${orderReference}، لكن إشعار Gmail ماتبعتش.`
+      setNotice(language === 'ar'
+        ? (emailSent
+          ? `تم تسجيل طلبك بنجاح! الرقم المرجعي ${orderReference}، واتبعث إشعار Gmail.`
+          : `تم تسجيل الطلب بنجاح! الرقم المرجعي ${orderReference}، لكن إشعار Gmail ماتبعتش.`)
+        : language === 'fr'
+          ? (emailSent
+            ? `Commande enregistrée ! Référence ${orderReference}. Notification Gmail envoyée.`
+            : `Commande enregistrée ! Référence ${orderReference}, mais la notification Gmail n’a pas été envoyée.`)
+          : language === 'de'
+            ? (emailSent
+              ? `Bestellung erfolgreich gespeichert! Referenz ${orderReference}. Gmail-Benachrichtigung gesendet.`
+              : `Bestellung gespeichert! Referenz ${orderReference}, aber die Gmail-Benachrichtigung wurde nicht gesendet.`)
+            : (emailSent
+              ? `Order saved successfully! Reference ${orderReference}. Gmail notification sent.`
+              : `Order saved! Reference ${orderReference}, but the Gmail notification was not sent.`)
       );
     } catch (error) {
       console.error('Submit order error:', error);
@@ -919,7 +1067,7 @@ export default function App() {
                   <h3>{product.name}</h3>
                   <p>{product.description}</p>
                 </div>
-                <strong>{money(product.price)}</strong>
+                <strong>{money(product.price, language)}</strong>
               </div>
 
               <div className="product-options">
@@ -973,21 +1121,21 @@ export default function App() {
         <div className="section-heading">
           <div>
             <p className="eyebrow">PRIVATE AREA</p>
-            <h2>لوحة الإدارة</h2>
+            <h2>{t('لوحة الإدارة')}</h2>
           </div>
           <button className="text-button" onClick={() => setAdminOpen(false)}>
-            <X size={18} /> إغلاق
+            <X size={18} /> {t('إغلاق')}
           </button>
         </div>
 
         {authLoading ? (
-          <p className="muted">جارٍ التحقق من تسجيل الدخول...</p>
+          <p className="muted">{t('جارٍ التحقق من تسجيل الدخول...')}</p>
         ) : !session ? (
           <form className="admin-login" onSubmit={adminLogin}>
-            <p>سجّل دخولك بحساب المدير المصرّح له داخل Supabase.</p>
+            <p>{t('سجّل دخولك بحساب المدير المصرّح له داخل Supabase.')}</p>
             <input
               type="email"
-              placeholder="البريد الإلكتروني"
+              placeholder={t('البريد الإلكتروني')}
               value={adminEmail}
               onChange={e => setAdminEmail(e.target.value)}
               autoComplete="username"
@@ -995,29 +1143,29 @@ export default function App() {
             />
             <input
               type="password"
-              placeholder="كلمة المرور"
+              placeholder={t('كلمة المرور')}
               value={adminPassword}
               onChange={e => setAdminPassword(e.target.value)}
               autoComplete="current-password"
               required
             />
             <button className="primary-button" type="submit">
-              <LogIn size={17} /> تسجيل الدخول
+              <LogIn size={17} /> {t('تسجيل الدخول')}
             </button>
           </form>
         ) : !isAdmin ? (
           <div className="admin-login">
-            <p>الحساب الحالي غير مخوّل لإدارة المتجر.</p>
+            <p>{t('الحساب الحالي غير مخوّل لإدارة المتجر.')}</p>
             <button className="secondary-button" onClick={adminLogout}>
-              <LogOut size={16} /> تسجيل الخروج
+              <LogOut size={16} /> {t('تسجيل الخروج')}
             </button>
           </div>
         ) : (
           <div className="admin-content">
             <div className="admin-toolbar">
-              <span><ShieldCheck size={18} /> تم التحقق من دور المدير</span>
+              <span><ShieldCheck size={18} /> {t('تم التحقق من دور المدير')}</span>
               <button className="text-button" onClick={adminLogout}>
-                <LogOut size={16} /> خروج
+                <LogOut size={16} /> {t('خروج')}
               </button>
             </div>
 
@@ -1026,80 +1174,80 @@ export default function App() {
                 className={adminTab === 'orders' ? 'active' : ''}
                 onClick={() => setAdminTab('orders')}
               >
-                <Package size={16} /> الطلبات
+                <Package size={16} /> {t('الطلبات')}
               </button>
               <button
                 className={adminTab === 'complaints' ? 'active' : ''}
                 onClick={() => setAdminTab('complaints')}
               >
-                <MessageSquareWarning size={16} /> الشكاوى
+                <MessageSquareWarning size={16} /> {t('الشكاوى')}
                 <span>{adminComplaints.filter(c => c.status === 'new').length}</span>
               </button>
               <button
                 className={adminTab === 'products' ? 'active' : ''}
                 onClick={() => setAdminTab('products')}
               >
-                <Plus size={16} /> إضافة منتج
+                <Plus size={16} /> {t('إضافة منتج')}
               </button>
             </div>
 
             {adminTab === 'products' && (
               <form className="admin-form admin-product-form" onSubmit={createProduct}>
-                <h3><Plus size={18} /> إضافة منتج</h3>
+                <h3><Plus size={18} /> {t('إضافة منتج')}</h3>
                 <input
-                  placeholder="اسم المنتج"
+                  placeholder={t('اسم المنتج')}
                   value={newProduct.name}
                   onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
                   required
                 />
                 <input
                   type="number" min="0.01" step="0.01"
-                  placeholder="السعر بالجنيه"
+                  placeholder={t('السعر بالجنيه')}
                   value={newProduct.price}
                   onChange={e => setNewProduct({ ...newProduct, price: e.target.value })}
                   required
                 />
                 <input
-                  type="url" placeholder="رابط الصورة"
+                  type="url" placeholder={t('رابط الصورة')}
                   value={newProduct.image_url}
                   onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })}
                 />
                 <input
-                  placeholder="الوصف"
+                  placeholder={t('الوصف')}
                   value={newProduct.description}
                   onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
                 />
                 <input
-                  placeholder="المقاسات مفصولة بفواصل"
+                  placeholder={t('المقاسات مفصولة بفواصل')}
                   value={newProduct.sizes}
                   onChange={e => setNewProduct({ ...newProduct, sizes: e.target.value })}
                 />
                 <input
-                  placeholder="الألوان مفصولة بفواصل"
+                  placeholder={t('الألوان مفصولة بفواصل')}
                   value={newProduct.colors}
                   onChange={e => setNewProduct({ ...newProduct, colors: e.target.value })}
                 />
                 <input
-                  type="number" min="0" step="1" placeholder="المخزون"
+                  type="number" min="0" step="1" placeholder={t('المخزون')}
                   value={newProduct.stock}
                   onChange={e => setNewProduct({ ...newProduct, stock: e.target.value })}
                 />
-                <button className="primary-button" type="submit">حفظ المنتج</button>
+                <button className="primary-button" type="submit">{t('حفظ المنتج')}</button>
               </form>
             )}
 
             {adminTab === 'orders' && (
               <div className="orders-box">
                 <div className="admin-list-heading">
-                  <h3><Package size={18} /> الطلبات</h3>
+                  <h3><Package size={18} /> {t('الطلبات')}</h3>
                   <button className="secondary-button" onClick={loadOrders}>
-                    <RefreshCw size={16} /> تحديث
+                    <RefreshCw size={16} /> {t('تحديث')}
                   </button>
                 </div>
 
                 {adminOrders.map(order => (
                   <article className="order-card" key={order.id}>
-                    <strong>طلب #{order.id} — {money(order.total)}</strong>
+                    <strong>{t('طلب')} #{order.id} — {money(order.total, language)}</strong>
                     <span>{order.customer_name} · {order.phone}</span>
                     <small>{order.address}</small>
                     <select
@@ -1107,14 +1255,14 @@ export default function App() {
                       onChange={e => updateOrderStatus(order.id, e.target.value)}
                     >
                       {allowedOrderStatuses.map(status =>
-                        <option key={status} value={status}>{orderStatusLabels[status]}</option>
+                        <option key={status} value={status}>{t(orderStatusLabels[status])}</option>
                       )}
                     </select>
                   </article>
                 ))}
 
                 {!adminOrders.length && (
-                  <p className="muted">لا توجد طلبات محملة. اضغط تحديث.</p>
+                  <p className="muted">{t('لا توجد طلبات محملة. اضغط تحديث.')}</p>
                 )}
               </div>
             )}
@@ -1122,17 +1270,17 @@ export default function App() {
             {adminTab === 'complaints' && (
               <div className="orders-box">
                 <div className="admin-list-heading">
-                  <h3><MessageSquareWarning size={18} /> الشكاوى والتواصل</h3>
+                  <h3><MessageSquareWarning size={18} /> {t('الشكاوى والتواصل')}</h3>
                   <button className="secondary-button" onClick={loadComplaints}>
-                    <RefreshCw size={16} /> تحديث
+                    <RefreshCw size={16} /> {t('تحديث')}
                   </button>
                 </div>
 
                 {adminComplaints.map(complaint => (
                   <article className="order-card complaint-admin-card" key={complaint.id}>
-                    <strong>رسالة #{complaint.id} — {complaint.complaint_type}</strong>
+                    <strong>{t('رسالة')} #{complaint.id} — {t(complaint.complaint_type)}</strong>
                     <span>{complaint.customer_name} · {complaint.phone}</span>
-                    {complaint.order_reference && <small>رقم الطلب: {complaint.order_reference}</small>}
+                    {complaint.order_reference && <small>{t('رقم الطلب')}: {complaint.order_reference}</small>}
                     <p className="complaint-message" style={{ whiteSpace: 'pre-wrap' }}>
                       {complaint.message}
                     </p>
@@ -1142,14 +1290,14 @@ export default function App() {
                         : ''}
                     </small>
                     <label className="status-field">
-                      حالة المتابعة
+                      {t('حالة المتابعة')}
                       <select
                         value={complaint.status}
                         onChange={e => updateComplaintStatus(complaint.id, e.target.value)}
                       >
                         {complaintStatuses.map(status =>
                           <option key={status} value={status}>
-                            {complaintStatusLabels[status]}
+                            {t(complaintStatusLabels[status])}
                           </option>
                         )}
                       </select>
@@ -1158,7 +1306,7 @@ export default function App() {
                 ))}
 
                 {!adminComplaints.length && (
-                  <p className="muted">لا توجد شكاوى محملة. اضغط تحديث.</p>
+                  <p className="muted">{t('لا توجد شكاوى محملة. اضغط تحديث.')}</p>
                 )}
               </div>
             )}
@@ -1177,7 +1325,7 @@ export default function App() {
           <span>TRIPLE</span><b>Z</b>
         </a>
 
-        <nav className="page-nav" aria-label="القائمة الرئيسية">
+        <nav className="page-nav" aria-label={t('الرئيسية')}>
           <a className={page === 'home' ? 'active' : ''} href="/"
             onClick={e => { e.preventDefault(); navigate('home'); }}>
             {t('الرئيسية')}
@@ -1211,7 +1359,7 @@ export default function App() {
               <UserRound size={16} /> {language === 'ar' ? 'حسابي' : language === 'fr' ? 'Mon compte' : language === 'de' ? 'Mein Konto' : 'My account'}
             </button>
           )}
-          <button className="icon-button" aria-label="السلة" onClick={() => setDrawer(true)}>
+          <button className="icon-button" aria-label={t('سلة المشتريات')} onClick={() => setDrawer(true)}>
             <ShoppingBag size={20} />
             {count > 0 && <span className="cart-count">{count}</span>}
           </button>
@@ -1223,8 +1371,8 @@ export default function App() {
 
       {notice && (
         <div className="notice" role="status">
-          <span>{notice}</span>
-          <button onClick={() => setNotice('')} aria-label="إغلاق التنبيه">
+          <span>{t(notice)}</span>
+          <button onClick={() => setNotice('')} aria-label={t('إغلاق')}>
             <X size={16} />
           </button>
         </div>
@@ -1239,9 +1387,7 @@ export default function App() {
               <div className="hero-copy">
                 <p className="eyebrow">NEW SEASON / 2026</p>
                 <h1>OWN YOUR<br /><em>LANE.</em></h1>
-                <p className="hero-text">
-                  ستايل شبابي. تفاصيل مختلفة. اختار القطعة اللي شبهك.
-                </p>
+                <p className="hero-text">{t('ستايل شبابي. تفاصيل مختلفة. اختار القطعة اللي شبهك.')}</p>
                 <div className="hero-actions">
                   <button className="primary-button" onClick={() => navigate('products')}>
                     {t('تسوّق الآن')} <ArrowUpRight size={18} />
@@ -1268,7 +1414,7 @@ export default function App() {
             <section className="manifesto" id="about">
               <p className="eyebrow">MORE THAN A FIT</p>
               <h2>NOT HERE TO<br /><span>BLEND IN.</span></h2>
-              <p>TRIPLE Z — هوية مستقلة، ستايل جريء، وتفاصيل معمولة عشان تفرق.</p>
+              <p>TRIPLE Z — {t('هوية مستقلة، ستايل جريء، وتفاصيل معمولة عشان تفرق.')}</p>
               <button className="primary-button" onClick={() => navigate('products')}>
                 {t('اكتشف المجموعة')} <ArrowUpRight size={18} />
               </button>
@@ -1286,8 +1432,8 @@ export default function App() {
           <section className="shop-section products-page">
             <div className="page-intro">
               <p className="eyebrow">TRIPLE Z COLLECTION</p>
-              <h1>المنتجات<span>.</span></h1>
-              <p>اختار القطعة والمقاس واللون المناسب ليك.</p>
+              <h1>{t('المنتجات')}<span>.</span></h1>
+              <p>{t('اختار القطعة والمقاس واللون المناسب ليك.')}</p>
             </div>
 
             <form className="product-search" onSubmit={e => e.preventDefault()}>
@@ -1296,15 +1442,15 @@ export default function App() {
                 placeholder={t("ابحث عن المنتجات...")}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                aria-label="البحث عن المنتجات"
+                aria-label={t('البحث عن المنتجات')}
               />
               {searchTerm && (
                 <button type="button" className="search-clear"
-                  onClick={() => setSearchTerm('')} aria-label="مسح البحث">
+                  onClick={() => setSearchTerm('')} aria-label={t('مسح البحث')}>
                   <X size={16} />
                 </button>
               )}
-              <button className="search-submit" type="submit" aria-label="بحث">
+              <button className="search-submit" type="submit" aria-label={t('بحث')}>
                 <Search size={20} />
                 <span>{t("بحث")}</span>
               </button>
@@ -1312,13 +1458,13 @@ export default function App() {
 
             {!isSupabaseConfigured && (
               <div className="setup-warning">
-                دي معاينة تجريبية بمنتجات مؤقتة. قاعدة البيانات غير متصلة.
+                {t('دي معاينة تجريبية بمنتجات مؤقتة. قاعدة البيانات غير متصلة.')}
               </div>
             )}
 
             <div className="products-toolbar">
               <button className="secondary-button" onClick={() => setCustomOpen(true)}>
-                <ImagePlus size={17} /> اطلب تصميمك الخاص
+                <ImagePlus size={17} /> {t('اطلب تصميمك الخاص')}
               </button>
             </div>
 
@@ -1330,7 +1476,7 @@ export default function App() {
           <section className="complaints-page">
             <div className="page-intro complaints-intro">
               <p className="eyebrow">CONTACT TRIPLE Z</p>
-              <h1>الشكاوى والتواصل<span>.</span></h1>
+              <h1>{t('الشكاوى والتواصل')}<span>.</span></h1>
             </div>
 
             <form className="complaint-form" onSubmit={submitComplaint}>
@@ -1344,12 +1490,12 @@ export default function App() {
                     ...complaintForm, complaint_type: e.target.value
                   })}
                 >
-                  <option>شكوى بخصوص طلب</option>
-                  <option>تأخير في التوصيل</option>
-                  <option>مشكلة في منتج</option>
-                  <option>استفسار</option>
-                  <option>اقتراح</option>
-                  <option>نوع آخر</option>
+                  <option>{t('شكوى بخصوص طلب')}</option>
+                  <option>{t('تأخير في التوصيل')}</option>
+                  <option>{t('مشكلة في منتج')}</option>
+                  <option>{t('استفسار')}</option>
+                  <option>{t('اقتراح')}</option>
+                  <option>{t('نوع آخر')}</option>
                 </select>
               </label>
 
@@ -1389,7 +1535,7 @@ export default function App() {
                   onChange={e => setComplaintForm({
                     ...complaintForm, order_reference: e.target.value
                   })}
-                  placeholder="مثال: TZ-123456"
+                  placeholder={t('مثال: TZ-123456')}
                   maxLength={100}
                 />
               </label>
@@ -1441,7 +1587,7 @@ export default function App() {
                   ? (language === 'ar' ? 'إنشاء حساب جديد' : language === 'fr' ? 'Créer un compte' : language === 'de' ? 'Neues Konto erstellen' : 'Create your account')
                   : (language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Connexion' : language === 'de' ? 'Anmelden' : 'Sign in')}</h2>
               </div>
-              <button className="icon-button" onClick={() => { setCustomerAuthOpen(false); setCustomerAuthError(''); }} aria-label="Close">
+              <button className="icon-button" onClick={() => { setCustomerAuthOpen(false); setCustomerAuthError(''); }} aria-label={t('إغلاق')}>
                 <X />
               </button>
             </div>
@@ -1498,7 +1644,7 @@ export default function App() {
             <div className="drawer-heading">
               <div>
                 <p className="eyebrow">YOUR IDEA / OUR STYLE</p>
-                <h2>Customize Design</h2>
+                <h2>{t('Customize Design')}</h2>
               </div>
               <button className="icon-button" onClick={() => setCustomOpen(false)}
                 aria-label="إغلاق">
@@ -1507,7 +1653,7 @@ export default function App() {
             </div>
 
             <p className="muted">
-              ارفع صورة التصميم اللي في بالك واكتب تفاصيله، وفريق TRIPLE Z هيراجع طلبك.
+              {t('ارفع صورة التصميم اللي في بالك واكتب تفاصيله، وفريق TRIPLE Z هيراجع طلبك.')}
             </p>
 
             <form className="custom-form" onSubmit={submitCustomDesign}>
@@ -1527,8 +1673,8 @@ export default function App() {
 
               <label className="custom-upload">
                 <ImagePlus size={24} />
-                <strong>{customFile ? customFile.name : 'اختار صورة التصميم'}</strong>
-                <span>PNG أو JPG — بحد أقصى 5 ميجابايت</span>
+                <strong>{customFile ? customFile.name : t('اختار صورة التصميم')}</strong>
+                <span>{t('PNG أو JPG — بحد أقصى 5 ميجابايت')}</span>
                 <input type="file" accept="image/*"
                   onChange={e => setCustomFile(e.target.files?.[0] || null)}
                   required />
@@ -1538,23 +1684,23 @@ export default function App() {
                 <div className="selected-file">
                   <span>{customFile.name}</span>
                   <button type="button" onClick={() => setCustomFile(null)}
-                    aria-label="إزالة الصورة">
+                    aria-label={t('إزالة الصورة')}>
                     <Trash2 size={16} />
                   </button>
                 </div>
               )}
 
               <label>
-                تفاصيل التصميم
+                {t('تفاصيل التصميم')}
                 <textarea value={customDescription}
                   onChange={e => setCustomDescription(e.target.value)}
-                  placeholder="مثلاً: لون الهودي، مكان التصميم، المقاس..."
+                  placeholder={t('مثلاً: لون الهودي، مكان التصميم، المقاس...')}
                   maxLength={1500} rows={4} />
               </label>
 
               <button className="primary-button full-button" type="submit"
                 disabled={customLoading}>
-                {customLoading ? 'جارٍ إرسال طلبك...' : 'إرسال طلب التصميم'}
+                {customLoading ? t('جارٍ إرسال طلبك...') : t('إرسال طلب التصميم')}
                 <Send size={17} />
               </button>
             </form>
@@ -1571,7 +1717,7 @@ export default function App() {
                 <h2>{t('سلة المشتريات')}</h2>
               </div>
               <button className="icon-button" onClick={() => setDrawer(false)}
-                aria-label="إغلاق السلة">
+                aria-label={t('إغلاق السلة')}>
                 <X />
               </button>
             </div>
@@ -1584,7 +1730,7 @@ export default function App() {
                   setDrawer(false);
                   navigate('products');
                 }}>
-                  كمّل تسوّق
+                  {t('كمّل تسوّق')}
                 </button>
               </div>
             ) : (
@@ -1598,9 +1744,9 @@ export default function App() {
                       <div className="cart-item-details">
                         <strong>{item.name}</strong>
                         <span>{item.size} / {item.color}</span>
-                        <b>{money(item.price * item.quantity)}</b>
+                        <b>{money(item.price * item.quantity, language)}</b>
                         <div className="qty-controls">
-                          <button onClick={() => changeQty(item.key, -1)} aria-label="تقليل الكمية">
+                          <button onClick={() => changeQty(item.key, -1)} aria-label={t('تقليل الكمية')}>
                             <Minus size={14} />
                           </button>
                           <span>{item.quantity}</span>
@@ -1617,7 +1763,7 @@ export default function App() {
                               return;
                             }
                             changeQty(item.key, 1);
-                          }} aria-label="زيادة الكمية">
+                          }} aria-label={t('زيادة الكمية')}>
                             <Plus size={14} />
                           </button>
                         </div>
@@ -1628,7 +1774,7 @@ export default function App() {
 
                 <div className="cart-total">
                   <span>{t('الإجمالي')}</span>
-                  <strong>{money(total)}</strong>
+                  <strong>{money(total, language)}</strong>
                 </div>
 
                 {!checkout ? (
@@ -1656,7 +1802,7 @@ export default function App() {
                       required minLength={8} />
                     <p className="muted">{t("الدفع عند الاستلام — هنأكد الطلب قبل الشحن.")}</p>
                     <button className="primary-button full-button" type="submit" disabled={loading}>
-                       {loading ? (language === 'ar' ? 'جارٍ تسجيل الطلب...' : language === 'fr' ? 'Enregistrement...' : language === 'de' ? 'Bestellung wird gespeichert...' : 'Saving order...') : `${language === 'ar' ? 'تأكيد الطلب' : language === 'fr' ? 'Confirmer la commande' : language === 'de' ? 'Bestellung bestätigen' : 'Confirm order'} — ${money(total)}`}
+                       {loading ? (language === 'ar' ? 'جارٍ تسجيل الطلب...' : language === 'fr' ? 'Enregistrement...' : language === 'de' ? 'Bestellung wird gespeichert...' : 'Saving order...') : `${language === 'ar' ? 'تأكيد الطلب' : language === 'fr' ? 'Confirmer la commande' : language === 'de' ? 'Bestellung bestätigen' : 'Confirm order'} — ${money(total, language)}`}
                     </button>
                   </form>
                 )}
